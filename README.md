@@ -1,13 +1,28 @@
 # Cloneable
 
 A Java-based CLI application which queries GitHub and reports cloneable
-projects.
+projects.  Useful for personal backups of GitHub with minimal dependencies.
 
-# Build Jar
+# Download
 
-    ./gradlew clean jar
+Binary download is available in [GitHub releases][releases].
 
-# Usage
+[releases]: https://github.com/samrocketman/cloneable/releases
+
+# Example Usage
+
+```
+export GITHUB_TOKEN=<personal access token>
+java -jar cloneable.jar --owner samrocketman
+```
+
+Clone all repositories.
+
+```
+java -jar cloneable.jar --owner samrocketman --url --skip-local-bare-repos |  xargs -r -n1 -P16 -- git clone --mirror
+```
+
+# Options
 
 ```
 Usage: cloneable [-bdhuV] -o=<owner> [-t=<token>]
@@ -28,3 +43,11 @@ Gets a list of repositories if given a user or org owner.
   -u, --url             Prints out clone URL instead of repository name.
   -V, --version         Print version information and exit.
 ```
+
+# Build Jar
+
+    ./gradlew clean jar
+
+Run tests
+
+    ./gradlew clean check
