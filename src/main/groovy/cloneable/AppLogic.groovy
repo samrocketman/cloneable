@@ -36,8 +36,16 @@ class AppLogic {
         '"' + response.data.owned.repositories.pages.nextPage + '"'
     }
 
-    static void printRepositoryNames(Map response) {
-        println response.data.owned.repositories.repoMeta*.name.join('\n')
+    static void printRepository(Map response, Boolean printUrl, Boolean skipLocalBare) {
+        println response.data.owned.repositories.repoMeta.findAll { Map repo ->
+            !skipLocalBare || ( skipLocalBare && !(new File(repo.name + '.git' ).exists()) )
+        }.collect { Map repo ->
+            if(printUrl) {
+                repo.cloneUrl
+            } else {
+                repo.name
+            }
+        }.join('\n')
     }
 
     static void main(App options) {
@@ -49,11 +57,11 @@ class AppLogic {
             nextPage: null
         ]
         Map response = github.sendGQL(getScriptFromTemplate(graphql_template, variables))
-        printRepositoryNames(response)
+        printRepository(response, options.printUrl, options.skipLocalBare)
         while(hasNextPage(response)) {
             variables.nextPage = getNextPage(response)
             response = github.sendGQL(getScriptFromTemplate(graphql_template, variables))
-            printRepositoryNames(response)
+            printRepository(response, options.printUrl, options.skipLocalBare)
         }
     }
 }

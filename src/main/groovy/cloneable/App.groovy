@@ -22,6 +22,12 @@ class App implements Callable<Integer> {
     @Option(names = ["-o", "--owner"], required = true, description = "GitHub account or organization for querying a list of projects.")
     String owner
 
+    @Option(names = ["-u", "--url"], description = "Prints out clone URL instead of repository name.")
+    Boolean printUrl = false
+
+    @Option(names = ["-b", "--skip-local-bare-repos"], description = "If a bare repository directory exists locally (the name of the repo ending with '.git'), then it will not be printed out.  This is useful for cloning only missing repositories.")
+    Boolean skipLocalBare = false
+
     static void main(String... args) {
         int exitCode = new CommandLine(new App()).execute(args);
         System.exit(exitCode);
