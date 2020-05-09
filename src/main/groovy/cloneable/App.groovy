@@ -6,7 +6,6 @@ package cloneable
 import picocli.CommandLine
 import picocli.CommandLine.Command
 import picocli.CommandLine.Option
-//import picocli.CommandLine.Parameters
 
 import java.util.concurrent.Callable
 
@@ -20,6 +19,9 @@ class App implements Callable<Integer> {
     @Option(names = ["-t", "--github-token"], description = "GitHub personal access token or file containing a token.  Falls back to checking GITHUB_TOKEN environment variable.")
     String token = ''
 
+    @Option(names = ["-o", "--owner"], required = true, description = "GitHub account or organization for querying a list of projects.")
+    String owner
+
     static void main(String... args) {
         int exitCode = new CommandLine(new App()).execute(args);
         System.exit(exitCode);
@@ -28,7 +30,7 @@ class App implements Callable<Integer> {
     @Override
     Integer call() throws Exception {
         try {
-            AppLogic.main(token)
+            AppLogic.main(this)
         } catch(Exception e) {
             if(debug)  {
                 throw e
