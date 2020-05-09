@@ -12,7 +12,7 @@ class AppLogic {
         |query {
         |  owned: repositoryOwner(login: "${owner}") {
         |    url
-        |    repositories(first: ${ first ?: 100 }, after: ${nextPage ?: 'null'}) {
+        |    repositories(first: ${ first ?: 100 }, after: ${nextPage ?: 'null'}, affiliations: OWNER) {
         |      pages: pageInfo {
         |        hasNextPage
         |        nextPage: endCursor
