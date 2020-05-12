@@ -11,6 +11,8 @@ plugins {
     id 'groovy'
 }
 
+ext.groovyVersion = System.getenv('GROOVY_VERSION')?: '2.4.15'
+
 repositories {
     // Use jcenter for resolving dependencies.
     // You can declare any Maven/Ivy/file repository here.
@@ -19,7 +21,9 @@ repositories {
 
 dependencies {
     // Use the latest Groovy version for building this library
-    implementation 'org.codehaus.groovy:groovy-all:2.4.15'
+    implementation "org.codehaus.groovy:groovy:${groovyVersion}"
+    implementation "org.codehaus.groovy:groovy-templates:${groovyVersion}"
+    implementation "org.codehaus.groovy:groovy-json:${groovyVersion}"
     //implementation 'org.codehaus.groovy:groovy-all:3.0.3'
     compile 'info.picocli:picocli:4.2.0'
     compile('org.yaml:snakeyaml:1.26')
