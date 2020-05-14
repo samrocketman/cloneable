@@ -53,7 +53,7 @@ class AppLogic {
     }
 
     static void printRepository(Map response, Boolean printUrl, Boolean skipLocalBare) {
-        println response.data.owned.repositories.repoMeta.findAll { Map repo ->
+        List repositories = response.data.owned.repositories.repoMeta.findAll { Map repo ->
             !skipLocalBare || ( skipLocalBare && !(new File(repo.name + '.git' ).exists()) )
         }.collect { Map repo ->
             if(printUrl) {
@@ -61,7 +61,10 @@ class AppLogic {
             } else {
                 repo.name
             }
-        }.join('\n')
+        }
+        if(repositories) {
+            println(repositories.join('\n'))
+        }
     }
 
     static void main(App options) {

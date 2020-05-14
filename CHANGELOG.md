@@ -1,3 +1,10 @@
+# 0.3
+
+- Bugfix: when using option `--skip-local-bare-repos` a blank line would be
+  printed if a paginated GraphQL query returned repositories which all had local
+  bare repositories existing.  It no longer will print a blank line per GraphQL
+  page.
+
 # 0.2
 
 - Optimized Jar includes minimum groovy parts.

@@ -1,15 +1,31 @@
 # Cloneable
 
-A Java-based CLI application which queries GitHub and reports cloneable
-projects.  Useful for personal backups of GitHub with minimal dependencies.
+A simple backup solution for offsite backups of GitHub repository source code.
+
+Cloneable is a Java-based CLI application which queries GitHub and reports
+cloneable projects.  It only does one thing: lists repositories.  Other Linux
+utilities can be used in conjunction with cloneable to create and update a local
+backup of GitHub.  Useful for personal backups of GitHub with minimal
+dependencies.
+
+Cloneable utilizes [GitHub API v4 GraphQL][v4].
 
 # Download
 
 Binary download is available in [GitHub releases][releases].
 
-[releases]: https://github.com/samrocketman/cloneable/releases
+# Setup
+
+
+Requires a [GitHub personal access token][github-token] with scopes:
+
+- `repo` and `read:org` for an organization with private repositories.
+- `repo` for a user with private repositories.
+- No scopes required for a user or organization with public repositories only.
 
 # Example Usage
+
+List repository names under a user or organization.
 
 ```
 export GITHUB_TOKEN=<personal access token>
@@ -18,8 +34,16 @@ java -jar cloneable.jar --owner samrocketman
 
 Clone all repositories.
 
+```bash
+java -jar cloneable.jar --owner samrocketman --url --skip-local-bare-repos \
+  | xargs -r -n1 -P16 -- git clone --mirror
 ```
-java -jar cloneable.jar --owner samrocketman --url --skip-local-bare-repos |  xargs -r -n1 -P16 -- git clone --mirror
+
+Synchronize all repository mirrors.
+
+```bash
+find . -maxdepth 1 -name '*.git' -print0 \
+  | xargs -0 -n1 -P16 -I'{}' -- /bin/bash -exc 'cd "{}"; git fetch'
 ```
 
 # Options
@@ -51,3 +75,7 @@ Gets a list of repositories if given a user or org owner.
 Run tests
 
     ./gradlew clean check
+
+[github-token]: https://help.github.com/en/github/authenticating-to-github/creating-a-personal-access-token-for-the-command-line
+[releases]: https://github.com/samrocketman/cloneable/releases
+[v4]: https://developer.github.com/v4/
