@@ -8,7 +8,8 @@ utilities can be used in conjunction with cloneable to create and update a local
 backup of GitHub.  Useful for personal backups of GitHub with minimal
 dependencies.
 
-Cloneable utilizes [GitHub API v4 GraphQL][v4].
+Cloneable utilizes [GitHub API v4 GraphQL][v4].  If you need a more thorough
+backup solution, check out [other solutions on GitHub][other-backup].
 
 # Download
 
@@ -79,3 +80,4 @@ Run tests
 [github-token]: https://help.github.com/en/github/authenticating-to-github/creating-a-personal-access-token-for-the-command-line
 [releases]: https://github.com/samrocketman/cloneable/releases
 [v4]: https://developer.github.com/v4/
+[other-backup]: https://github.com/topics/github-backup
