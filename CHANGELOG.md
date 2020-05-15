@@ -1,3 +1,7 @@
+# 0.4
+
+- Version from gradle is the version used in CLI.
+
 # 0.3
 
 - Bugfix: when using option `--skip-local-bare-repos` a blank line would be

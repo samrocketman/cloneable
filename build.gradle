@@ -12,6 +12,7 @@ plugins {
 }
 
 ext.groovyVersion = System.getenv('GROOVY_VERSION')?: '2.4.15'
+rootProject.version = "${version}"
 
 repositories {
     // Use jcenter for resolving dependencies.
@@ -35,10 +36,14 @@ dependencies {
 
 jar {
     manifest {
-        attributes 'Main-Class': 'cloneable.App'
+        attributes 'Main-Class': 'cloneable.App',
+                   'Application-Name': rootProject.name,
+                   'Application-Version': version
     }
 
     from {
         configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) }
     }
+
+    archiveName "${rootProject.name}.jar"
 }

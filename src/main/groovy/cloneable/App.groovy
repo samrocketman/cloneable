@@ -21,7 +21,7 @@ import picocli.CommandLine.Option
 
 import java.util.concurrent.Callable
 
-@Command(name = 'cloneable', mixinStandardHelpOptions = true, version = 'cloneable 0.3',
+@Command(name = 'cloneable', mixinStandardHelpOptions = true, versionProvider = ManifestVersionProvider.class,
          description = 'Gets a list of repositories if given a GitHub user or GitHub organization.\n\nhttps://github.com/samrocketman/cloneable\n\nOptions:')
 class App implements Callable<Integer> {
 
