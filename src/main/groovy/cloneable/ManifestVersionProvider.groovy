@@ -9,6 +9,8 @@ import java.util.jar.Manifest
 
 /**
  * {@link IVersionProvider} implementation that returns version information from the picocli-x.x.jar file's {@code /META-INF/MANIFEST.MF} file.
+ * https://github.com/remkop/picocli/blob/master/picocli-examples/src/main/java/picocli/examples/VersionProviderDemo2.java#L69
+ * https://github.com/remkop/picocli/issues/757
  */
 class ManifestVersionProvider implements IVersionProvider {
     String[] getVersion() throws Exception {
