@@ -8,7 +8,7 @@ import java.util.jar.Attributes
 import java.util.jar.Manifest
 
 /**
- * {@link IVersionProvider} implementation that returns version information from the picocli-x.x.jar file's {@code /META-INF/MANIFEST.MF} file.
+ * {@link IVersionProvider} implementation that returns version information from the cloneable.jar file's {@code /META-INF/MANIFEST.MF} file.
  * https://github.com/remkop/picocli/blob/master/picocli-examples/src/main/java/picocli/examples/VersionProviderDemo2.java#L69
  * https://github.com/remkop/picocli/issues/757
  */
@@ -21,7 +21,11 @@ class ManifestVersionProvider implements IVersionProvider {
                 Manifest manifest = new Manifest(url.openStream());
                 if (isApplicableManifest(manifest)) {
                     Attributes attr = manifest.getMainAttributes();
-                    return ["${get(attr, 'Application-Name')} ${get(attr, 'Application-Version')}"] as String[]
+                    if(get(attr, 'Application-Version').endsWith('-SNAPSHOT')) {
+                        return ["${get(attr, 'Application-Name')} ${get(attr, 'Application-Version')} (git-hash ${get(attr, 'Application-Git-Hash')})"] as String[]
+                    } else {
+                        return ["${get(attr, 'Application-Name')} ${get(attr, 'Application-Version')}"] as String[]
+                    }
                 }
             } catch (IOException ex) {
                 return ["Unable to read from ${url}: ${ex}"] as String[]

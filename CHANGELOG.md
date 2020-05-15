@@ -1,3 +1,9 @@
+# 0.5
+
+- Now development snapshots versions are supported.  When a user calls
+  `--version` and the jar was built from a development snapshot, the version
+  information will include the git hash from the build.
+
 # 0.4
 
 - Version from gradle is the version used in CLI.
