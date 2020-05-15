@@ -1,6 +1,7 @@
 package cloneable
 
 import picocli.CommandLine.IVersionProvider
+
 import java.io.IOException
 import java.net.URL
 import java.util.Enumeration
@@ -22,23 +23,23 @@ import java.util.jar.Manifest
 class ManifestVersionProvider implements IVersionProvider {
     String[] getVersion() throws Exception {
         Enumeration<URL> resources = ManifestVersionProvider.class.classLoader.getResources("META-INF/MANIFEST.MF")
-        while(resources.hasMoreElements()) {
-            URL url = resources.nextElement()
-            try {
-                Manifest manifest = new Manifest(url.openStream())
-                Attributes attr = manifest.mainAttributes
-                if (isApplicableManifest(attr)) {
-                    List<String> versionInfo = [get(attr, 'Application-Name'), get(attr, 'Application-Version')]
-                    if(get(attr, 'Application-Version').endsWith('-SNAPSHOT')) {
-                        versionInfo << "(git-hash ${get(attr, 'Application-Git-Hash')})"
-                    }
-                        return [versionInfo.join(' ')] as String[]
-                }
-            } catch (IOException ex) {
-                return ["Unable to read from ${url}: ${ex}"] as String[]
-            }
+        Attributes attr
+        URL url = resources.find { URL url ->
+            Manifest manifest = new Manifest(url.openStream())
+            attr = manifest.mainAttributes
+            isApplicableManifest(attr)
         }
-        return new String[0]
+        if(url) {
+            List<String> versionInfo = ['Application-Name', 'Application-Version'].collect { String prop ->
+                get(attr, prop)
+            }
+            if(versionInfo[-1].endsWith('-SNAPSHOT')) {
+                versionInfo << "(git-hash ${get(attr, 'Application-Git-Hash')})"
+            }
+            [versionInfo.join(' ')] as String[]
+        } else {
+            new String[0]
+        }
     }
 
     private Boolean isApplicableManifest(Attributes attributes) {
@@ -46,6 +47,6 @@ class ManifestVersionProvider implements IVersionProvider {
     }
 
     private static def get(Attributes attributes, String key) {
-        return attributes.get(new Attributes.Name(key))
+        attributes.get(new Attributes.Name(key))
     }
 }

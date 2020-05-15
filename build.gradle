@@ -36,6 +36,8 @@ dependencies {
 
 jar {
     manifest {
+        // Application-Name must match isApplicableManifest() in source file:
+        // src/main/groovy/cloneable/ManifestVersionProvider.groovy
         attributes 'Main-Class': 'cloneable.App',
                    'Application-Name': rootProject.name,
                    'Application-Version': version,
