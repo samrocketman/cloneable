@@ -56,7 +56,7 @@ class App implements Callable<Integer> {
             if(debug)  {
                 throw e
             } else {
-                System.err.println e.message
+                System.err.println("${e.class.simpleName}: ${e.message}")
                 return 1
             }
         }

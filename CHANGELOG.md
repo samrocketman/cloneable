@@ -4,6 +4,10 @@
   repositories that only contain the matching topic.  The list of topics is
   treated as a match for any topic.  This option can be specified multiple
   times.
+- Errors now include the exception simple name.  This is necessary because when
+  a `UnknownHostException` occurred it would only show the domain of the unknown
+  host but didn't explain the issue.  With the exception name, the error becomes
+  more clear.
 - Now development snapshots versions are supported.  When a user calls
   `--version` and the jar was built from a development snapshot, the version
   information will include the git hash from the build.
