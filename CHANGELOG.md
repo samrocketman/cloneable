@@ -1,5 +1,9 @@
 # 0.5
 
+- New option: `--match-topics` or `-m` for short will now filter for
+  repositories that only contain the matching topic.  The list of topics is
+  treated as a match for any topic.  This option can be specified multiple
+  times.
 - Now development snapshots versions are supported.  When a user calls
   `--version` and the jar was built from a development snapshot, the version
   information will include the git hash from the build.

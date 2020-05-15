@@ -47,11 +47,23 @@ find . -maxdepth 1 -name '*.git' -print0 \
   | xargs -0 -n1 -P16 -I'{}' -- /bin/bash -exc 'cd "{}"; git fetch'
 ```
 
+Show samrocketman repositories which have a `jenkins` topic.
+
+```bash
+java -jar cloneable.jar --owner samrocketman --match-topics jenkins
+```
+
 # Options
 
+The following options are available from `java -jar cloneable.jar --help`.
+
 ```
-Usage: cloneable [-bdhuV] -o=<owner> [-t=<token>]
-Gets a list of repositories if given a user or org owner.
+Usage: cloneable [-bdhuV] -o=<owner> [-t=<token>] [-m=<matchAnyTopic>]...
+Gets a list of repositories if given a GitHub user or GitHub organization.
+
+https://github.com/samrocketman/cloneable
+
+Options:
   -b, --skip-local-bare-repos
                         If a bare repository directory exists locally (the name
                           of the repo ending with '.git'), then it will not be
@@ -59,6 +71,9 @@ Gets a list of repositories if given a user or org owner.
                           repositories.
   -d, --debug           Prints out stack traces.
   -h, --help            Show this help message and exit.
+  -m, --match-topics=<matchAnyTopic>
+                        Require all repositories to have one of the listed
+                          topics.  -m can be specified multiple times.
   -o, --owner=<owner>   GitHub account or organization for querying a list of
                           projects.
   -t, --github-token=<token>

@@ -38,6 +38,13 @@ class AppLogic {
         |        isFork
         |        isPrivate
         |        cloneUrl: sshUrl
+        |        repositoryTopics(first: 100) {
+        |          topics: nodes{
+        |	         topic {
+        |	           name
+        |	         }
+        |          }
+        |        }
         |      }
         |    }
         |  }
@@ -52,11 +59,23 @@ class AppLogic {
         '"' + response.data.owned.repositories.pages.nextPage + '"'
     }
 
-    static void printRepository(Map response, Boolean printUrl, Boolean skipLocalBare) {
+    static Boolean topicMatches(App options, Map repo) {
+        List<String> topics = repo?.repositoryTopics?.topics*.topic*.name
+        !options.matchAnyTopic || topics.any { String topic ->
+            topic in options.matchAnyTopic
+        }
+    }
+
+    static Boolean shouldNotSkipBare(App options, Map repo) {
+            !options.skipLocalBare || ( options.skipLocalBare && !(new File(repo.name + '.git' ).exists()) )
+    }
+
+    static void printRepository(App options, Map response) {
         List repositories = response.data.owned.repositories.repoMeta.findAll { Map repo ->
-            !skipLocalBare || ( skipLocalBare && !(new File(repo.name + '.git' ).exists()) )
+            shouldNotSkipBare(options, repo) &&
+            topicMatches(options, repo)
         }.collect { Map repo ->
-            if(printUrl) {
+            if(options.printUrl) {
                 repo.cloneUrl
             } else {
                 repo.name
@@ -76,11 +95,11 @@ class AppLogic {
             nextPage: null
         ]
         Map response = github.sendGQL(getScriptFromTemplate(graphql_template, variables))
-        printRepository(response, options.printUrl, options.skipLocalBare)
+        printRepository(options, response)
         while(hasNextPage(response)) {
             variables.nextPage = getNextPage(response)
             response = github.sendGQL(getScriptFromTemplate(graphql_template, variables))
-            printRepository(response, options.printUrl, options.skipLocalBare)
+            printRepository(options, response)
         }
     }
 }
