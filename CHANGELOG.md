@@ -1,3 +1,14 @@
+# 0.6
+
+- New option: `--skip-forked-repos` or `-f` for short.  If a repository is a fork from another user
+  or organization, then it will be skipped.
+- New option: `--skip-source-repos` or `-s` for short.  If a repository is
+  **not** a fork from another user or organization, then it will be skipped.
+- New option: `--skip-private-repos` or `-p` for short.  If a repository is
+  private, then it will be skipped.
+- New option: `--skip-public-repos` or `-P` for short.  If a repository is
+  public, then it will be skipped.
+
 # 0.5
 
 - New option: `--match-topics` or `-m` for short will now filter for
