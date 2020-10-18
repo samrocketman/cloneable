@@ -58,30 +58,36 @@ java -jar cloneable.jar --owner samrocketman --match-topics jenkins
 The following options are available from `java -jar cloneable.jar --help`.
 
 ```
-Usage: cloneable [-bdhuV] -o=<owner> [-t=<token>] [-m=<matchAnyTopic>]...
+Usage: cloneable [-bdfhpPsuV] -o=<owner> [-t=<token>] [-m=<matchAnyTopic>]...
 Gets a list of repositories if given a GitHub user or GitHub organization.
 
 https://github.com/samrocketman/cloneable
 
 Options:
   -b, --skip-local-bare-repos
-                        If a bare repository directory exists locally (the name
-                          of the repo ending with '.git'), then it will not be
-                          printed out.  This is useful for cloning only missing
-                          repositories.
-  -d, --debug           Prints out stack traces.
-  -h, --help            Show this help message and exit.
+                             If a bare repository directory exists locally (the
+                               name of the repo ending with '.git'), then it
+                               will not be printed out.  This is useful for
+                               cloning only missing repositories.
+  -d, --debug                Prints out stack traces.
+  -f, --skip-forked-repos    If a repository is a fork from another user or
+                               organization, then it will be skipped.
+  -h, --help                 Show this help message and exit.
   -m, --match-topics=<matchAnyTopic>
-                        Require all repositories to have one of the listed
-                          topics.  -m can be specified multiple times.
-  -o, --owner=<owner>   GitHub account or organization for querying a list of
-                          projects.
-  -t, --github-token=<token>
-                        GitHub personal access token or file containing a
-                          token.  Falls back to checking GITHUB_TOKEN
-                          environment variable.
-  -u, --url             Prints out clone URL instead of repository name.
-  -V, --version         Print version information and exit.
+                             Require all repositories to have one of the listed
+                               topics.  -m can be specified multiple times.
+  -o, --owner=<owner>        GitHub account or organization for querying a list
+                               of projects.
+  -p, --skip-private-repos   If a repository is private, then it will be
+                               skipped.
+  -P, --skip-public-repos    If a repository is public, then it will be skipped.
+  -s, --skip-source-repos    If a repository is **not** a fork from another
+                               user or organization, then it will be skipped.
+  -t, --github-token=<token> GitHub personal access token or file containing a
+                               token.  Falls back to checking GITHUB_TOKEN
+                               environment variable.
+  -u, --url                  Prints out clone URL instead of repository name.
+  -V, --version              Print version information and exit.
 ```
 
 # Build Jar
