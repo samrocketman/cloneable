@@ -70,8 +70,28 @@ class AppLogic {
             !options.skipLocalBare || ( options.skipLocalBare && !(new File(repo.name + '.git' ).exists()) )
     }
 
+    static Boolean shouldNotSkipForkedRepos(App options, Map repo) {
+        !options.skipForked || !( options.skipForked && repo.isFork )
+    }
+
+    static Boolean shouldNotSkipSourceRepos(App options, Map repo) {
+        !options.skipSource || !( options.skipSource && !repo.isFork )
+    }
+
+    static Boolean shouldNotSkipPrivateRepos(App options, Map repo) {
+        !options.skipPrivate || !( options.skipPrivate && repo.isPrivate )
+    }
+
+    static Boolean shouldNotSkipPublicRepos(App options, Map repo) {
+        !options.skipPublic || !( options.skipPublic && !repo.isPrivate )
+    }
+
     static void printRepository(App options, Map response) {
         List repositories = response.data.owned.repositories.repoMeta.findAll { Map repo ->
+            shouldNotSkipForkedRepos(options, repo) &&
+            shouldNotSkipSourceRepos(options, repo) &&
+            shouldNotSkipPrivateRepos(options, repo) &&
+            shouldNotSkipPublicRepos(options, repo) &&
             shouldNotSkipBare(options, repo) &&
             topicMatches(options, repo)
         }.collect { Map repo ->

@@ -40,6 +40,18 @@ class App implements Callable<Integer> {
     @Option(names = ["-b", "--skip-local-bare-repos"], description = "If a bare repository directory exists locally (the name of the repo ending with '.git'), then it will not be printed out.  This is useful for cloning only missing repositories.")
     Boolean skipLocalBare = false
 
+    @Option(names = ["-f", "--skip-forked-repos"], description = "If a repository is a fork from another user or organization, then it will be skipped.")
+    Boolean skipForked = false
+
+    @Option(names = ["-s", "--skip-source-repos"], description = "If a repository is **not** a fork from another user or organization, then it will be skipped.")
+    Boolean skipSource = false
+
+    @Option(names = ["-p", "--skip-private-repos"], description = "If a repository is private, then it will be skipped.")
+    Boolean skipPrivate = false
+
+    @Option(names = ["-P", "--skip-public-repos"], description = "If a repository is public, then it will be skipped.")
+    Boolean skipPublic = false
+
     @Option(names = ["-m", "--match-topics"], description = "Require all repositories to have one of the listed topics.  -m can be specified multiple times.")
     List<String> matchAnyTopic = []
 
