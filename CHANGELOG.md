@@ -1,3 +1,14 @@
+# 0.7
+
+- New option: `--inverse-search` or `-i` for short.  Will invert the skip logic
+  and instead treat it as criteria to print the repository.  Providing multiple
+  skip options will mean that a repository need only match one of the multiple
+  skip conditions.
+- New option: `--skip-empty` or `-e` for short.  Will skip repositories which do
+  not contain any Git commits.
+- New option: `--skip-archived` or `-f` for short.  Will skip archived
+  repositories.
+
 # 0.6
 
 - New option: `--skip-forked-repos` or `-f` for short.  If a repository is a fork from another user
