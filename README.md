@@ -58,21 +58,34 @@ java -jar cloneable.jar --owner samrocketman --match-topics jenkins
 The following options are available from `java -jar cloneable.jar --help`.
 
 ```
-Usage: cloneable [-bdfhpPsuV] -o=<owner> [-t=<token>] [-m=<matchAnyTopic>]...
+Usage: cloneable [-abdefhipPsuV] -o=<owner> [-t=<token>] [-m=<matchAnyTopic>]...
 Gets a list of repositories if given a GitHub user or GitHub organization.
 
 https://github.com/samrocketman/cloneable
 
 Options:
+  -a, --skip-archived-repos  If a repository is archived, then it will be
+                               skipped.
   -b, --skip-local-bare-repos
                              If a bare repository directory exists locally (the
                                name of the repo ending with '.git'), then it
                                will not be printed out.  This is useful for
                                cloning only missing repositories.
   -d, --debug                Prints out stack traces.
+  -e, --skip-empty-repos     If a repository does not contain any Git commits,
+                               then it will be skipped.
   -f, --skip-forked-repos    If a repository is a fork from another user or
                                organization, then it will be skipped.
   -h, --help                 Show this help message and exit.
+  -i, --inverse-search       Inverse the search results.  For example, instead
+                               of skipping repositories it will match
+                               repositories.  Adding the option
+                               --inverse-search along side --skip-archived will
+                               find all archived repositories.  If you provide
+                               multiple options then the inverse finds any
+                               match.  For example, adding --inverse-search
+                               with options --skip-archived and --skip-empty
+                               will find BOTH empty or archived repositories.
   -m, --match-topics=<matchAnyTopic>
                              Require all repositories to have one of the listed
                                topics.  -m can be specified multiple times.
