@@ -35,6 +35,8 @@ class AppLogic {
         |      }
         |      repoMeta: nodes {
         |        name
+        |        isArchived
+        |        isEmpty
         |        isFork
         |        isPrivate
         |        cloneUrl: sshUrl
@@ -86,14 +88,29 @@ class AppLogic {
         !options.skipPublic || !( options.skipPublic && !repo.isPrivate )
     }
 
+    static Boolean shouldNotSkipArchivedRepos(App options, Map repo) {
+        !options.skipArchived || !( options.skipArchived && repo.isArchived )
+    }
+
+    static Boolean shouldNotSkipEmptyRepos(App options, Map repo) {
+        !options.skipEmpty || !( options.skipEmpty && repo.isEmpty )
+    }
+
     static void printRepository(App options, Map response) {
         List repositories = response.data.owned.repositories.repoMeta.findAll { Map repo ->
-            shouldNotSkipForkedRepos(options, repo) &&
-            shouldNotSkipSourceRepos(options, repo) &&
-            shouldNotSkipPrivateRepos(options, repo) &&
-            shouldNotSkipPublicRepos(options, repo) &&
-            shouldNotSkipBare(options, repo) &&
-            topicMatches(options, repo)
+            (
+                shouldNotSkipArchivedRepos(options, repo) &&
+                shouldNotSkipBare(options, repo) &&
+                shouldNotSkipEmptyRepos(options, repo) &&
+                shouldNotSkipForkedRepos(options, repo) &&
+                shouldNotSkipPrivateRepos(options, repo) &&
+                shouldNotSkipPublicRepos(options, repo) &&
+                shouldNotSkipSourceRepos(options, repo) &&
+                topicMatches(options, repo)
+            ).with { Boolean shouldPrint ->
+                //shouldPrint && !options.inverseSearch
+                options.inverseSearch.xor(shouldPrint)
+            }
         }.collect { Map repo ->
             if(options.printUrl) {
                 repo.cloneUrl
