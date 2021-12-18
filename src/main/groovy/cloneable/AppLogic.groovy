@@ -163,15 +163,30 @@ class AppLogic {
             nextPage: null,
             branch: options.branch
         ]
-        println(getScriptFromTemplate(graphql_template, variables))
-        println "branch: ${options.branch}"
-        println "contains: ${options.matchAnyFiles}"
-        println "excludes: ${options.excludeAllFiles}"
         Map response = github.sendGQL(getScriptFromTemplate(graphql_template, variables))
         printRepository(options, response)
-        while(hasNextPage(response)) {
-            variables.nextPage = getNextPage(response)
-            response = github.sendGQL(getScriptFromTemplate(graphql_template, variables))
+        Boolean retryRequest = false
+        int retryCount = 30
+        while(hasNextPage(response) || retryRequest) {
+            if(!retryRequest) {
+                variables.nextPage = getNextPage(response)
+            } else {
+                retryRequest = false
+            }
+            try {
+                response = github.sendGQL(getScriptFromTemplate(graphql_template, variables))
+            } catch(Exception e) {
+                if(retryCount <= 0) {
+                    throw e
+                }
+                // random increasing backoff; starts by sleeping 1 second and
+                // will gradually increase randomly sleeping up to 30 seconds.
+                int sleepInterval = (Math.abs(new Random().nextInt() % (31 - retryCount)) + 1)*1000
+                //println("Exception caught: sleeping for ${sleepInterval/1000} seconds before retrying.")
+                sleep(sleepInterval)
+                retryRequest = true
+                retryCount--
+            }
             printRepository(options, response)
         }
     }
