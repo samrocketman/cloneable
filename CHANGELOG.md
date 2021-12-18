@@ -1,6 +1,13 @@
 # 0.8
 
 - Support for self-hosted GitHub Enterprise.  See README for details.
+- New option: `--contains` or `-F` for short.  Match any repository containing
+  any file at the repository root.
+- New option: `--exclude-repos-with` or `-E` option for short.  Skips
+  repositories which contain any listed files.
+- New option: `--branch` or `-B` for short.  When using `-F` or `-E` options,
+  choose the branch name to search for files.  It will use default branch if
+  none specified.
 
 # 0.7
 
