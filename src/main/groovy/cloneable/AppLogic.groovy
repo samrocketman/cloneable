@@ -125,6 +125,9 @@ class AppLogic {
 
     static void main(App options) {
         GitHubGraphQL github = new GitHubGraphQL()
+        if(System.getenv('GITHUB_GRAPHQL_URL')) {
+            github.gh_api = System.getenv('GITHUB_GRAPHQL_URL')
+        }
         github.credential = new Credential(options.token)
         Map variables = [
             owner: options.owner,

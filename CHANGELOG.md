@@ -1,3 +1,7 @@
+# 0.8
+
+- Support for self-hosted GitHub Enterprise.  See README for details.
+
 # 0.7
 
 - New option: `--inverse-search` or `-i` for short.  Will invert the skip logic

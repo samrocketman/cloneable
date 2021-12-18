@@ -29,7 +29,8 @@ Requires a [GitHub personal access token][github-token] with scopes:
 List repository names under a user or organization.
 
 ```
-export GITHUB_TOKEN=<personal access token>
+export GITHUB_TOKEN
+read -ersp token: GITHUB_TOKEN
 java -jar cloneable.jar --owner samrocketman
 ```
 
@@ -52,6 +53,14 @@ Show samrocketman repositories which have a `jenkins` topic.
 ```bash
 java -jar cloneable.jar --owner samrocketman --match-topics jenkins
 ```
+
+# Environment Variables
+
+- `GITHUB_GRAPHQL_URL` if using self-hosted GitHub Enterprise, then set
+  environment variable to `https://[hostname]/api/graphql`.
+- `GITHUB_TOKEN` set your personal access token so that cloneable can
+  authenticate with the GraphQL API.  See also [`Setup` section](#setup).
+
 
 # Options
 
