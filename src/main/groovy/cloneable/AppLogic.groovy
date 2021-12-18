@@ -16,42 +16,51 @@
 
 package cloneable
 
-import net.gleske.jervis.remotes.GitHubGraphQL
 import static net.gleske.jervis.tools.AutoRelease.getScriptFromTemplate
+import net.gleske.jervis.remotes.GitHubGraphQL
 
 class AppLogic {
     AppLogic() {
         throw new IllegalStateException('ERROR: you\'ve encountered a bug.  Add --debug option and open an issue.')
     }
 
-    static String graphql_template = '''
-        |query {
-        |  owned: repositoryOwner(login: "${owner}") {
-        |    url
-        |    repositories(first: ${ first ?: 100 }, after: ${nextPage ?: 'null'}, affiliations: OWNER) {
-        |      pages: pageInfo {
-        |        hasNextPage
-        |        nextPage: endCursor
-        |      }
-        |      repoMeta: nodes {
-        |        name
-        |        isArchived
-        |        isEmpty
-        |        isFork
-        |        isPrivate
-        |        cloneUrl: sshUrl
-        |        repositoryTopics(first: 100) {
-        |          topics: nodes{
-        |	         topic {
-        |	           name
-        |	         }
-        |          }
-        |        }
-        |      }
-        |    }
-        |  }
-        |}
-        '''.stripMargin().trim()
+    static String graphql_template = '''\
+        query {
+          owned: repositoryOwner(login: "${owner}") {
+            url
+            repositories(first: ${ first ?: 100 }, after: ${nextPage ?: 'null'}, affiliations: OWNER) {
+              pages: pageInfo {
+                hasNextPage
+                nextPage: endCursor
+              }
+              repoMeta: nodes {
+                name
+                isArchived
+                isEmpty
+                isFork
+                isPrivate
+                cloneUrl: sshUrl
+                repositoryTopics(first: 100) {
+                  topics: nodes{
+                    topic {
+                      name
+                    }
+                  }
+                }<% if(branch) { %>
+                branch: object(expression: "${branch}") {
+                  ... on Commit {
+                    folder: tree {
+                      file: entries {
+                        name
+                      }
+                    }
+                  }
+                }<% } %>
+              }
+            }
+          }
+        }
+        '''.stripIndent().trim()
 
     static Boolean hasNextPage(Map response) {
         response.data.owned.repositories.pages.hasNextPage
@@ -63,8 +72,8 @@ class AppLogic {
 
     static Boolean topicMatches(App options, Map repo) {
         List<String> topics = repo?.repositoryTopics?.topics*.topic*.name
-        !options.matchAnyTopic || topics.any { String topic ->
-            topic in options.matchAnyTopic
+        !options.matchAnyTopics || topics.any { String topic ->
+            topic in options.matchAnyTopics
         }
     }
 
@@ -96,6 +105,20 @@ class AppLogic {
         !options.skipEmpty || !( options.skipEmpty && repo.isEmpty )
     }
 
+    static Boolean anyFileMatches(App options, Map repo) {
+        List<String> folder = repo?.branch?.folder?.file*.name
+        !options.matchAnyFiles || options.matchAnyFiles.any { String file ->
+            file in folder
+        }
+    }
+
+    static Boolean allFilesMissing(App options, Map repo) {
+        List<String> folder = repo?.branch?.folder?.file*.name
+        !options.excludeAllFiles || options.excludeAllFiles.every { String file ->
+            !(file in folder)
+        }
+    }
+
     static void printRepository(App options, Map response) {
         List repositories = response.data.owned.repositories.repoMeta.findAll { Map repo ->
             (
@@ -106,6 +129,8 @@ class AppLogic {
                 shouldNotSkipPrivateRepos(options, repo) &&
                 shouldNotSkipPublicRepos(options, repo) &&
                 shouldNotSkipSourceRepos(options, repo) &&
+                anyFileMatches(options, repo) &&
+                allFilesMissing(options, repo) &&
                 topicMatches(options, repo)
             ).with { Boolean shouldPrint ->
                 //shouldPrint && !options.inverseSearch
@@ -129,11 +154,19 @@ class AppLogic {
             github.gh_api = System.getenv('GITHUB_GRAPHQL_URL')
         }
         github.credential = new Credential(options.token)
+        if((options.excludeAllFiles || options.matchAnyFiles) && !options.branch) {
+            options.branch = 'HEAD'
+        }
         Map variables = [
             owner: options.owner,
             first: 100,
-            nextPage: null
+            nextPage: null,
+            branch: options.branch
         ]
+        println(getScriptFromTemplate(graphql_template, variables))
+        println "branch: ${options.branch}"
+        println "contains: ${options.matchAnyFiles}"
+        println "excludes: ${options.excludeAllFiles}"
         Map response = github.sendGQL(getScriptFromTemplate(graphql_template, variables))
         printRepository(options, response)
         while(hasNextPage(response)) {

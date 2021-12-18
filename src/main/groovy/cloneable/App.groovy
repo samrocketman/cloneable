@@ -31,20 +31,29 @@ class App implements Callable<Integer> {
     @Option(names = ["-b", "--skip-local-bare-repos"], description = "If a bare repository directory exists locally (the name of the repo ending with '.git'), then it will not be printed out.  This is useful for cloning only missing repositories.")
     Boolean skipLocalBare = false
 
+    @Option(names = ["-B", "--branch"], description = "If using -F or -E options, then choose the Git branch to search for files.  The default branch will be queried if this option is not specified.")
+    String branch
+
     @Option(names = ["-d", "--debug"], description = "Prints out stack traces.")
     Boolean debug = false
 
     @Option(names = ["-e", "--skip-empty-repos"], description = "If a repository does not contain any Git commits, then it will be skipped.")
     Boolean skipEmpty = false
 
+    @Option(names = ["-E", "--exclude-repos-with"], description = "Match any repository containing which does NOT contain the file at the repository root.  -E can be specified more than once to exclude a repository containing any or all of the listed files.")
+    List<String> excludeAllFiles = []
+
     @Option(names = ["-f", "--skip-forked-repos"], description = "If a repository is a fork from another user or organization, then it will be skipped.")
     Boolean skipForked = false
+
+    @Option(names = ["-F", "--contains"], description = "Match any repository containing any file at the repository root.  -F can be specified more than once to match any one of multiple files.")
+    List<String> matchAnyFiles = []
 
     @Option(names = ["-i", "--inverse-search"], description = "Inverse the search results.  For example, instead of skipping repositories it will match repositories.  Adding the option --inverse-search along side --skip-archived will find all archived repositories.  If you provide multiple options then the inverse finds any match.  For example, adding --inverse-search with options --skip-archived and --skip-empty will find BOTH empty or archived repositories.")
     Boolean inverseSearch = false
 
     @Option(names = ["-m", "--match-topics"], description = "Require all repositories to have one of the listed topics.  -m can be specified multiple times.")
-    List<String> matchAnyTopic = []
+    List<String> matchAnyTopics = []
 
     @Option(names = ["-o", "--owner"], required = true, description = "GitHub account or organization for querying a list of projects.")
     String owner
