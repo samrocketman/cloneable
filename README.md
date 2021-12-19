@@ -67,7 +67,10 @@ java -jar cloneable.jar --owner samrocketman --match-topics jenkins
 The following options are available from `java -jar cloneable.jar --help`.
 
 ```
-Usage: cloneable [-abdefhipPsuV] -o=<owner> [-t=<token>] [-m=<matchAnyTopic>]...
+Usage: cloneable [-abdefhipPsuV] [--after=<afterTimeframe>] [-B=<branch>]
+                 [--before=<beforeTimeframe>] -o=<owner> [-t=<token>]
+                 [-E=<excludeAllFiles>]... [-F=<matchAnyFiles>]...
+                 [-m=<matchAnyTopics>]...
 Gets a list of repositories if given a GitHub user or GitHub organization.
 
 https://github.com/samrocketman/cloneable
@@ -75,16 +78,43 @@ https://github.com/samrocketman/cloneable
 Options:
   -a, --skip-archived-repos  If a repository is archived, then it will be
                                skipped.
+      --after=<afterTimeframe>
+                             Find all repositories updated after the given
+                               timeframe. Must be a positive integer followed
+                               by one of: d, m, y.  For example, 1y will find
+                               all repositories updated after 1 year ago; or
+                               within the past 12m or 12 months.  If d, m, or y
+                               is not provided then d will be assumed.
   -b, --skip-local-bare-repos
                              If a bare repository directory exists locally (the
                                name of the repo ending with '.git'), then it
                                will not be printed out.  This is useful for
                                cloning only missing repositories.
+  -B, --branch=<branch>      If using -F or -E options, then choose the Git
+                               branch to search for files.  The default branch
+                               will be queried if this option is not specified.
+      --before=<beforeTimeframe>
+                             Find all repositories updated before the given
+                               timeframe. Must be a positive integer followed
+                               by one of: d, m, y.  For example, 1y will find
+                               all repositories updated before 1 year ago.  If
+                               d, m, or y is not provided then d will be
+                               assumed.
   -d, --debug                Prints out stack traces.
   -e, --skip-empty-repos     If a repository does not contain any Git commits,
                                then it will be skipped.
+  -E, --exclude-repos-with=<excludeAllFiles>
+                             Match any repository containing which does NOT
+                               contain the file at the repository root.  -E can
+                               be specified more than once to exclude a
+                               repository containing any or all of the listed
+                               files.
   -f, --skip-forked-repos    If a repository is a fork from another user or
                                organization, then it will be skipped.
+  -F, --contains=<matchAnyFiles>
+                             Match any repository containing any file at the
+                               repository root.  -F can be specified more than
+                               once to match any one of multiple files.
   -h, --help                 Show this help message and exit.
   -i, --inverse-search       Inverse the search results.  For example, instead
                                of skipping repositories it will match
@@ -95,7 +125,7 @@ Options:
                                match.  For example, adding --inverse-search
                                with options --skip-archived and --skip-empty
                                will find BOTH empty or archived repositories.
-  -m, --match-topics=<matchAnyTopic>
+  -m, --match-topics=<matchAnyTopics>
                              Require all repositories to have one of the listed
                                topics.  -m can be specified multiple times.
   -o, --owner=<owner>        GitHub account or organization for querying a list
