@@ -15,9 +15,11 @@
  */
 package cloneable
 
+import cloneable.errors.ShortErrorMessageHandler
 import picocli.CommandLine
 import picocli.CommandLine.Command
 import picocli.CommandLine.Option
+import picocli.CommandLine.ParameterException
 
 import java.util.concurrent.Callable
 
@@ -74,7 +76,7 @@ class App implements Callable<Integer> {
     Boolean printUrl = false
 
     static void main(String... args) {
-        int exitCode = new CommandLine(new App()).execute(args);
+        int exitCode = new CommandLine(new App()).setParameterExceptionHandler(new ShortErrorMessageHandler()).execute(args);
         System.exit(exitCode);
     }
 
