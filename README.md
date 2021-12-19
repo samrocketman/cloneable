@@ -120,6 +120,41 @@ Run tests
 
     ./gradlew clean check
 
+# Bash completion
+
+Cloneable is an uber Jar which contains all of its dependencies necessary to run
+it.  Bash completion is available for this app which increases the convenience
+of its use.
+
+Create a local directory for cloneable config.
+
+```bash
+mkdir ~/.local/share/cloneable
+```
+
+Generate bash completion file.
+
+```bash
+FULL_CLONEABLE_PATH="path/to/cloneable.jar"
+java -cp "$FULL_CLONEABLE_PATH" picocli.AutoComplete -n cloneable cloneable.App
+mv cloneable_completion ~/.local/share/cloneable/
+cp "$FULL_CLONEABLE_PATH" ~/.local/share/cloneable/
+```
+
+Set up a `cloneable` command alias.
+
+```bash
+# install in bashrc
+echo 'source ~/.local/share/cloneable/cloneable_completion' >> ~/.bashrc
+echo "alias cloneable='java -jar ~/.local/share/cloneable/cloneable.jar'" >> ~/.bashrc
+
+# install in bash_profile
+echo 'source ~/.local/share/cloneable/cloneable_completion' >> ~/.bash_profile
+echo "alias cloneable='java -jar ~/.local/share/cloneable/cloneable.jar'" >> ~/.bash_profile
+```
+
+Now all `cloneable` options will be able to TAB complete.
+
 [github-token]: https://help.github.com/en/github/authenticating-to-github/creating-a-personal-access-token-for-the-command-line
 [releases]: https://github.com/samrocketman/cloneable/releases
 [v4]: https://developer.github.com/v4/

@@ -8,6 +8,7 @@
 - New option: `--branch` or `-B` for short.  When using `-F` or `-E` options,
   choose the branch name to search for files.  It will use default branch if
   none specified.
+- README update: Bash completion options now available.
 
 # 0.7
 
