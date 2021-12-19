@@ -135,10 +135,9 @@ mkdir ~/.local/share/cloneable
 Generate bash completion file.
 
 ```bash
-FULL_CLONEABLE_PATH="path/to/cloneable.jar"
-java -cp "$FULL_CLONEABLE_PATH" picocli.AutoComplete -n cloneable cloneable.App
+java -cp build/libs/cloneable.jar picocli.AutoComplete -n cloneable cloneable.App
 mv cloneable_completion ~/.local/share/cloneable/
-cp "$FULL_CLONEABLE_PATH" ~/.local/share/cloneable/
+cp build/libs/cloneable.jar ~/.local/share/cloneable/
 ```
 
 Set up a `cloneable` command alias.
@@ -151,6 +150,13 @@ echo "alias cloneable='java -jar ~/.local/share/cloneable/cloneable.jar'" >> ~/.
 # install in bash_profile
 echo 'source ~/.local/share/cloneable/cloneable_completion' >> ~/.bash_profile
 echo "alias cloneable='java -jar ~/.local/share/cloneable/cloneable.jar'" >> ~/.bash_profile
+```
+
+Use in your current shell without requiring restarting the shell.
+
+```bash
+source ~/.local/share/cloneable/cloneable_completion
+alias cloneable='java -jar ~/.local/share/cloneable/cloneable.jar'
 ```
 
 Now all `cloneable` options will be able to TAB complete.
