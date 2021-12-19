@@ -35,6 +35,7 @@ class AppLogic {
               }
               repoMeta: nodes {
                 name
+                pushedAt
                 isArchived
                 isEmpty
                 isFork
@@ -119,9 +120,27 @@ class AppLogic {
         }
     }
 
+    static Boolean updatedAfterTimeframe(App options, Map repo) {
+        if(!(repo?.pushedAt) || !options.afterTimeframe) {
+            return true
+        }
+        Date pushedAt = Date.parse("yyyy-MM-dd", repo.pushedAt)
+        pushedAt.after(options.afterTimeframe)
+    }
+
+    static Boolean updatedBeforeTimeframe(App options, Map repo) {
+        if(!(repo?.pushedAt) || !options.beforeTimeframe) {
+            return true
+        }
+        Date pushedAt = Date.parse("yyyy-MM-dd", repo.pushedAt)
+        pushedAt.before(options.beforeTimeframe)
+    }
+
     static void printRepository(App options, Map response) {
         List repositories = response.data.owned.repositories.repoMeta.findAll { Map repo ->
             (
+                allFilesMissing(options, repo) &&
+                anyFileMatches(options, repo) &&
                 shouldNotSkipArchivedRepos(options, repo) &&
                 shouldNotSkipBare(options, repo) &&
                 shouldNotSkipEmptyRepos(options, repo) &&
@@ -129,9 +148,9 @@ class AppLogic {
                 shouldNotSkipPrivateRepos(options, repo) &&
                 shouldNotSkipPublicRepos(options, repo) &&
                 shouldNotSkipSourceRepos(options, repo) &&
-                anyFileMatches(options, repo) &&
-                allFilesMissing(options, repo) &&
-                topicMatches(options, repo)
+                topicMatches(options, repo) &&
+                updatedAfterTimeframe(options, repo) &&
+                updatedBeforeTimeframe(options, repo)
             ).with { Boolean shouldPrint ->
                 //shouldPrint && !options.inverseSearch
                 options.inverseSearch.xor(shouldPrint)

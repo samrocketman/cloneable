@@ -18,14 +18,20 @@ package cloneable
 import cloneable.errors.ShortErrorMessageHandler
 import picocli.CommandLine
 import picocli.CommandLine.Command
+import picocli.CommandLine.Model.CommandSpec
 import picocli.CommandLine.Option
 import picocli.CommandLine.ParameterException
+import picocli.CommandLine.Spec
 
+import groovy.time.TimeCategory
 import java.util.concurrent.Callable
 
 @Command(name = 'cloneable', mixinStandardHelpOptions = true, versionProvider = ManifestVersionProvider.class,
          description = 'Gets a list of repositories if given a GitHub user or GitHub organization.\n\nhttps://github.com/samrocketman/cloneable\n\nOptions:')
 class App implements Callable<Integer> {
+
+    @Spec
+    CommandSpec spec
 
     @Option(names = ["-a", "--skip-archived-repos"], description = "If a repository is archived, then it will be skipped.")
     Boolean skipArchived = false
@@ -74,6 +80,51 @@ class App implements Callable<Integer> {
 
     @Option(names = ["-u", "--url"], description = "Prints out clone URL instead of repository name.")
     Boolean printUrl = false
+
+    Date beforeTimeframe
+    @Option(names = ["--before"], description = "Find all repositories updated before the given timeframe. Must be a positive integer followed by one of: d, m, y.  For example, 1y will find all repositories updated before 1 year ago.  If d, m, or y is not provided then d will be assumed.")
+    void setBeforeTimeframe(String userInput) {
+        this.beforeTimeframe = getTimeframe('--before', userInput)
+    }
+
+    Date afterTimeframe
+    @Option(names = ["--after"], description = "Find all repositories updated after the given timeframe. Must be a positive integer followed by one of: d, m, y.  For example, 1y will find all repositories updated after 1 year ago; or within the past 12m or 12 months.  If d, m, or y is not provided then d will be assumed.")
+    void setAfterTimeframe(String userInput) {
+        this.afterTimeframe = getTimeframe('--after', userInput)
+    }
+
+    /**
+      Returns a date with a given offset.
+
+      @param option The option using this function to give a richer help message on error.
+      @param userInput User input from the option e.g. Nd, Nm, or Ny where N is
+                       a positive integer.
+      @return Returns a date offset with a time in the past.  e.g. userInput 1y
+              will return today's date one year ago.
+      */
+    private Date getTimeframe(String option, String userInput) {
+        Date timeframe = new Date()
+        use(TimeCategory) {
+            timeframe -= userInput.with { String s ->
+                switch(s) {
+                    case ~/^[0-9]+d?$/:
+                        return Integer.parseInt(s -~ /d$/).day
+                        break
+                    case  ~/^[0-9]+m$/:
+                        return Integer.parseInt(s -~ /m$/).month
+                        break
+                    case  ~/^[0-9]+y$/:
+                        return Integer.parseInt(s -~ /y$/).year
+                        break
+                    default:
+                        throw new ParameterException(spec.commandLine(), "${option} '${userInput}' must be a positive integer followed by {d = day, m = month, or y = year}.  For example,\n    " +
+                            ["${option} 1d: for all repositories updated ${option -~ /^--/} 1 day ago.",
+                            "${option} 1m: for all repositories updated ${option -~ /^--/} 1 month ago.",
+                            "${option} 1y: for all repositories updated ${option -~ /^--/} 1 year ago."].join('\n    '))
+                }
+            }
+        }
+    }
 
     static void main(String... args) {
         int exitCode = new CommandLine(new App()).setParameterExceptionHandler(new ShortErrorMessageHandler()).execute(args);

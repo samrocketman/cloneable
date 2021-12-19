@@ -8,6 +8,13 @@
 - New option: `--branch` or `-B` for short.  When using `-F` or `-E` options,
   choose the branch name to search for files.  It will use default branch if
   none specified.
+- New option: `--before`.  Find all repositories contributed before some
+  timeframe ago.  For example, `--before 1y` finds all repositories pushed more
+  than 1 year ago.
+- New option: `--after`.  Find all repositories contributed after some
+  timeframe ago.  For example, the following options will find all repositories
+  contributed within the past 30 days.  `--after 1m`, `--after 30d`, or `--after
+  30`.
 - README update: Bash completion options now available.
 
 # 0.7
