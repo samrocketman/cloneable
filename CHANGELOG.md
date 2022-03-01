@@ -1,3 +1,10 @@
+# 0.9
+
+- Bugfix: not listing repositories owned by another user or org in which the
+  user associated with the API token does not have ownership access.
+- Bugfix: Fix by rebuilding with OpenJDK 11 compatibility on Ubuntu 20.04 and
+  newer.  Upgraded to Groovy 3.0.9.
+
 # 0.8
 
 - Support for self-hosted GitHub Enterprise.  See README for details.
