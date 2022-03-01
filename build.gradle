@@ -11,7 +11,7 @@ plugins {
     id 'groovy'
 }
 
-ext.groovyVersion = System.getenv('GROOVY_VERSION')?: '2.4.15'
+ext.groovyVersion = System.getenv('GROOVY_VERSION')?: '3.0.9'
 rootProject.version = "${version}"
 
 repositories {
