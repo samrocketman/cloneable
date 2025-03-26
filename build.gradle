@@ -11,13 +11,24 @@ plugins {
     id 'groovy'
 }
 
-ext.groovyVersion = System.getenv('GROOVY_VERSION')?: '3.0.9'
+ext.groovyVersion = System.getenv('GROOVY_VERSION')?: '2.4.21'
 rootProject.version = "${version}"
+
+compileJava {
+    sourceCompatibility = JavaVersion.VERSION_1_8
+    targetCompatibility = JavaVersion.VERSION_1_8
+}
+
+compileGroovy {
+    sourceCompatibility = JavaVersion.VERSION_1_8
+    targetCompatibility = JavaVersion.VERSION_1_8
+}
 
 repositories {
     // Use jcenter for resolving dependencies.
     // You can declare any Maven/Ivy/file repository here.
-    jcenter()
+    mavenLocal()
+    mavenCentral()
 }
 
 dependencies {
@@ -25,13 +36,14 @@ dependencies {
     implementation "org.codehaus.groovy:groovy:${groovyVersion}"
     implementation "org.codehaus.groovy:groovy-templates:${groovyVersion}"
     implementation "org.codehaus.groovy:groovy-json:${groovyVersion}"
+    implementation 'info.picocli:picocli:4.7.6'
     //implementation 'org.codehaus.groovy:groovy-all:3.0.3'
-    compile 'info.picocli:picocli:4.2.0'
-    compile('org.yaml:snakeyaml:1.26')
-    compile('net.gleske:jervis:1.7') {
+    implementation 'org.bouncycastle:bcpkix-jdk18on:1.73'
+    implementation 'org.yaml:snakeyaml:1.33'
+    implementation('net.gleske:jervis:2.0.1') {
         transitive = false
     }
-    testCompile "org.spockframework:spock-core:1.3-groovy-2.4"
+    testImplementation "org.spockframework:spock-core:1.3-groovy-2.4"
 }
 
 jar {
@@ -47,6 +59,9 @@ jar {
     from {
         configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) }
     }
+    excludes = ['META-INF/*.SF', 'META-INF/*.DSA', 'META-INF/*.RSA']
 
-    archiveName "${rootProject.name}.jar"
+    //archiveName = "${rootProject.name}.jar"
+    archiveFileName = "${rootProject.name}.jar"
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
 }
