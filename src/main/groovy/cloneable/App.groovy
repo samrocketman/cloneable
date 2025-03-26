@@ -33,6 +33,12 @@ class App implements Callable<Integer> {
     @Spec
     CommandSpec spec
 
+    @Option(names = ["-g", "--github-app-id"], description = "GitHub App app ID associated with GitHub App private key.")
+    String ghAppId = ''
+
+    @Option(names = ["-k", "--github-app-key"], description = "GitHub App private key.")
+    String ghAppKey = ''
+
     @Option(names = ["-a", "--skip-archived-repos"], description = "If a repository is archived, then it will be skipped.")
     Boolean skipArchived = false
 

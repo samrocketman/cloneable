@@ -19,6 +19,13 @@ package cloneable
 import static net.gleske.jervis.tools.AutoRelease.getScriptFromTemplate
 import net.gleske.jervis.remotes.GitHubGraphQL
 
+import cloneable.errors.MissingCredentialException
+import net.gleske.jervis.remotes.GitHubGraphQL
+import net.gleske.jervis.remotes.creds.EphemeralTokenCache
+import net.gleske.jervis.remotes.creds.GitHubAppCredential
+import net.gleske.jervis.remotes.creds.GitHubAppRsaCredentialImpl
+import net.gleske.jervis.remotes.creds.ReadonlyTokenCredential
+
 class AppLogic {
     AppLogic() {
         throw new IllegalStateException('ERROR: you\'ve encountered a bug.  Add --debug option and open an issue.')
@@ -167,12 +174,35 @@ class AppLogic {
         }
     }
 
+    static ReadonlyTokenCredential getCredential(App options) {
+        if(options.ghAppId && options.ghAppKey) {
+            File key = new File(options.ghAppKey)
+            if(!key.exists()) {
+                throw new MissingCredentialException('GitHub App private key file does not exist.')
+            }
+            GitHubAppRsaCredentialImpl rsaCred = new GitHubAppRsaCredentialImpl(options.ghAppId, key.text)
+            rsaCred.owner = options.owner
+            EphemeralTokenCache tokenCred = new EphemeralTokenCache(System.getenv('CLONEABLE_CACHE_KEY') ?: options.ghAppKey)
+            if(System.getenv('CLONEABLE_CACHE_PATH')) {
+                tokenCred.cacheLockFile = (System.getenv('CLONEABLE_CACHE_PATH') -~ '/$') + '/jervis-token-cache.lock'
+                tokenCred.cacheFile = (System.getenv('CLONEABLE_CACHE_PATH') -~ '/$') + '/jervis-token-cache.yaml'
+            }
+            else if(!(new File('/dev/shm').exists())) {
+                tokenCred.cacheLockFile = '/tmp/jervis-token-cache.lock'
+                tokenCred.cacheFile = '/tmp/jervis-token-cache.yaml'
+            }
+            return new GitHubAppCredential(rsaCred, tokenCred)
+        } else {
+            return new Credential(options.token)
+        }
+    }
+
     static void main(App options) {
         GitHubGraphQL github = new GitHubGraphQL()
         if(System.getenv('GITHUB_GRAPHQL_URL')) {
             github.gh_api = System.getenv('GITHUB_GRAPHQL_URL')
         }
-        github.credential = new Credential(options.token)
+        github.credential = getCredential(options)
         if((options.excludeAllFiles || options.matchAnyFiles) && !options.branch) {
             options.branch = 'HEAD'
         }
