@@ -33,9 +33,7 @@ class ManifestVersionProvider implements IVersionProvider {
             List<String> versionInfo = ['Application-Name', 'Application-Version'].collect { String prop ->
                 get(attr, prop)
             }
-            if(versionInfo[-1].endsWith('-SNAPSHOT')) {
-                versionInfo << "(git-hash ${get(attr, 'Application-Git-Hash')})"
-            }
+            versionInfo << "(git-hash ${get(attr, 'Application-Git-Hash')})"
             [versionInfo.join(' ')] as String[]
         } else {
             new String[0]
