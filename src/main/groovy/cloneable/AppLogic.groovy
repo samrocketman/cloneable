@@ -203,6 +203,14 @@ class AppLogic {
             github.gh_api = System.getenv('GITHUB_GRAPHQL_URL')
         }
         github.credential = getCredential(options)
+        if(options.printGhToken) {
+            if(options.ghAppId && options.ghAppKey) {
+                println(github.credential.token)
+                return
+            } else {
+                throw new Exception('Cannot print token without using GitHub App authentication.')
+            }
+        }
         if((options.excludeAllFiles || options.matchAnyFiles) && !options.branch) {
             options.branch = 'HEAD'
         }
