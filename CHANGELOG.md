@@ -1,6 +1,7 @@
 # 0.10
 
 - Support for GitHub App Authentication.
+- Support for cloning over HTTP with GitHub App auth via `GIT_ASKPASS`.
 
 # 0.9
 
