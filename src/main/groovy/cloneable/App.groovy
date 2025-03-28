@@ -45,25 +45,26 @@ Example Usage:
     export CLONEABLE_GITHUB_APP_ID=1234
     export CLONEABLE_GITHUB_APP_KEY=/path/to/private_key
 
-  Create bash completion.
-    function cloneable() { java -jar /path/to/cloneable.jar "@"; }
-    java -cp build/libs/cloneable.jar picocli.AutoComplete \\
-      -n cloneable cloneable.App
-    cp cloneable_completion /etc/bash_completion.d/
+  Create CLI integration with bash completion.
+    java -jar cloneable.jar --print-cli-script > /usr/local/bin/cloneable
+    chmod 755 /usr/local/bin/cloneable
+    cloneable --print-bash-completion > /etc/bash_completion.d/cloneable_completion
 
   Install GIT_ASKPASS script when using GitHub App auth.
     cloneable -o your-org --print-askpass-script | /bin/bash
 
   HTTP mirror clones using GIT_ASKPASS.
     export GIT_ASKPASS=/tmp/askpass
-    cloneable -o your-org --http --skip-local-bare-repos \\
-      | xargs -r -n1 -P16 -- git clone --mirror
+    cloneable -o your-org --http \\
+      --skip-local-bare-repos --print-clone-script \\
+      | /bin/sh
+
     export CLONEABLE_OWNER=another-org
-    cloneable -o another-org --http --skip-local-bare-repos \\
-      | xargs -r -n1 -P16 -- git clone --mirror
+    cloneable --http --skip-local-bare-repos --print-clone-script \\
+      | /bin/sh
 
   Update HTTP mirrors.
-    cloneable -o none --print-update-script | /bin/bash -x
+    cloneable --print-update-script | /bin/sh -x
 
 Environment Variables:
 
