@@ -53,6 +53,14 @@ Cloning over HTTP.
     cloneable -o another-org --http --skip-local-bare-repos \
       | xargs -r -n1 -P16 -- git clone --mirror
 
+Update clones using HTTP.
+
+```
+find . -maxdepth 1 -name '*.git' -print0 \
+  | xargs -0 -n1 -P16 -I'{}' -- /bin/bash -exc \
+  'cd "{}"; export CLONEABLE_OWNER="$(git config remote.origin.url | cut -d/ -f4)"; git fetch'
+```
+
 ### GitHub Personal Access Tokens
 
 Requires a [GitHub personal access token][github-token] with scopes:
