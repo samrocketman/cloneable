@@ -179,6 +179,9 @@ class AppLogic {
 
     static ReadonlyTokenCredential getCredential(App options) {
         if(options.ghAppId && options.ghAppKey) {
+            if(!options.owner) {
+                throw new Exception('Must provide --owner option when using GitHub app authentication.')
+            }
             File key = new File(options.ghAppKey)
             if(!key.exists()) {
                 throw new MissingCredentialException('GitHub App private key file does not exist.')
@@ -206,13 +209,19 @@ class AppLogic {
             github.gh_api = System.getenv('GITHUB_GRAPHQL_URL')
         }
         github.credential = getCredential(options)
-        if(options.printGhToken) {
-            if(options.ghAppId && options.ghAppKey) {
-                println(github.credential.token)
-                return
-            } else {
+        if(options.printAskpassScript || options.printGhToken) {
+            if(options.printAskpassScript && options.printGhToken) {
+                throw new Exception('You must use --print-auth-token or --print-askpass-script but not both.')
+            } else if(!(options.ghAppId && options.ghAppKey)) {
                 throw new Exception('Cannot print token without using GitHub App authentication.')
             }
+            if(options.printGhToken) {
+                println(github.credential.token)
+            } else {
+                // options.printAskpassScript enters here
+                AskPass.printScript(options)
+            }
+            return
         }
         if((options.excludeAllFiles || options.matchAnyFiles) && !options.branch) {
             options.branch = 'HEAD'

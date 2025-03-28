@@ -15,9 +15,29 @@
  */
 
 package cloneable
+import static net.gleske.jervis.tools.AutoRelease.getScriptFromTemplate
 
 class AskPass {
     AskPass() {
         throw new IllegalStateException('ERROR: you\'ve encountered a bug.  Add --debug option and open an issue.')
+    }
+
+    static String getJarPath() {
+        new File(AskPass.getProtectionDomain().getCodeSource().getLocation().file).canonicalFile
+    }
+
+    static String getAskPassScript(App options) {
+        String script = new String(AskPass.getResourceAsStream('/cloneable/clone.script.jsp').getBytes()).trim()
+        Map binding = [
+            jarPath: getJarPath(),
+            keyPath: new File(options.ghAppKey).canonicalPath,
+            appId: options.ghAppId,
+            owner: options.owner
+        ]
+        getScriptFromTemplate(script, binding)
+    }
+
+    static printScript(App options) {
+        println(getAskPassScript(options))
     }
 }
