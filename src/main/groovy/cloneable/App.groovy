@@ -147,12 +147,23 @@ class App implements Callable<Integer> {
         System.exit(exitCode);
     }
 
-    @Override
-    Integer call() throws Exception {
-        if(System.getenv('CLONEABLE_DEBUG')) {
+    void setDefaultsWithEnvironment() {
+        if(!this.debug && System.getenv('CLONEABLE_DEBUG')) {
             this.debug = true
         }
+
+        if(!this.ghAppId && System.getenv('CLONEABLE_GITHUB_APP_ID')) {
+            this.ghAppId = System.getenv('CLONEABLE_GITHUB_APP_ID')
+        }
+        if(!this.ghAppKey && System.getenv('CLONEABLE_GITHUB_APP_KEY')) {
+            this.ghAppKey = System.getenv('CLONEABLE_GITHUB_APP_KEY')
+        }
+    }
+
+    @Override
+    Integer call() throws Exception {
         try {
+            setDefaultsWithEnvironment()
             AppLogic.main(this)
         } catch(Exception e) {
             if(this.debug)  {
