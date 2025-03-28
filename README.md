@@ -17,6 +17,43 @@ Binary download is available in [GitHub releases][releases].
 
 # Setup
 
+In order to call cloneable, it is recommended to set a small shell function with
+the full path to the downloaded Jar.
+
+    function cloneable() { java -jar /path/to/cloneable.jar "@"; }
+
+You need to also set up one of two methods for authentication to query GraphQL
+APIs.
+
+### GitHub App authentication
+
+Create and install a GitHub app.  Recommended permissions is repository
+`contents:readonly` for private repositories or no scopes for public
+repositories.
+
+Set environment variables with GitHub App authentication.
+
+    export CLONEABLE_GITHUB_APP_ID=1234
+    export CLONEABLE_GITHUB_APP_KEY=/path/to/private_key
+
+Install a `GIT_ASKPASS` script set up for cloning.
+
+    cloneable -o your-org --print-askpass-script | /bin/bash
+
+The `GIT_ASKPASS` script will default to always auth against `your-org`.  If you
+want to clone from another associated org for the GitHub App, you can set
+environment variable `CLONEABLE_OWNER`.
+
+Cloning over HTTP.
+
+    export GIT_ASKPASS=/tmp/askpass
+    cloneable -o your-org --http --skip-local-bare-repos \
+      | xargs -r -n1 -P16 -- git clone --mirror
+    export CLONEABLE_OWNER=another-org
+    cloneable -o another-org --http --skip-local-bare-repos \
+      | xargs -r -n1 -P16 -- git clone --mirror
+
+### GitHub Personal Access Tokens
 
 Requires a [GitHub personal access token][github-token] with scopes:
 
@@ -37,7 +74,7 @@ java -jar cloneable.jar --owner samrocketman
 Clone all repositories.
 
 ```bash
-java -jar cloneable.jar --owner samrocketman --url --skip-local-bare-repos \
+cloneable --owner samrocketman --url --skip-local-bare-repos \
   | xargs -r -n1 -P16 -- git clone --mirror
 ```
 
@@ -51,7 +88,7 @@ find . -maxdepth 1 -name '*.git' -print0 \
 Show samrocketman repositories which have a `jenkins` topic.
 
 ```bash
-java -jar cloneable.jar --owner samrocketman --match-topics jenkins
+cloneable --owner samrocketman --match-topics jenkins
 ```
 
 # Environment Variables
