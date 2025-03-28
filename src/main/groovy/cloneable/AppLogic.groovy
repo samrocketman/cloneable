@@ -209,17 +209,17 @@ class AppLogic {
             github.gh_api = System.getenv('GITHUB_GRAPHQL_URL')
         }
         github.credential = getCredential(options)
-        if(options.printAskpassScript || options.printGhToken) {
-            if(options.printAskpassScript && options.printGhToken) {
-                throw new Exception('You must use --print-auth-token or --print-askpass-script but not both.')
-            } else if(!(options.ghAppId && options.ghAppKey)) {
+        if(options.printAskpassScript || options.printGhToken || options.printHttpUpdateScript) {
+            if(!(options.ghAppId && options.ghAppKey)) {
                 throw new Exception('Cannot print token without using GitHub App authentication.')
             }
             if(options.printGhToken) {
                 println(github.credential.token)
+            } else if (options.printAskpassScript) {
+                AskPass.printAskpassScript(options)
             } else {
-                // options.printAskpassScript enters here
-                AskPass.printScript(options)
+                // options.printHttpUpdateScript enters here
+                AskPass.printHttpUpdateScript(options)
             }
             return
         }

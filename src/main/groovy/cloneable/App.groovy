@@ -55,10 +55,12 @@ Example Usage:
     export GIT_ASKPASS=/tmp/askpass
     cloneable -o your-org --http --skip-local-bare-repos \\
       | xargs -r -n1 -P16 -- git clone --mirror
+    export CLONEABLE_OWNER=another-org
+    cloneable -o another-org --http --skip-local-bare-repos \\
+      | xargs -r -n1 -P16 -- git clone --mirror
 
   Update HTTP mirrors.
-    find . -maxdepth 1 -name '*.git' -print0 \\
-      | xargs -0 -n1 -P16 -I'{}' -- /bin/bash -exc 'cd "{}"; git fetch'
+    cloneable -o none --print-update-script | /bin/bash -x
 
 Environment Variables:
 
@@ -155,6 +157,9 @@ class App implements Callable<Integer> {
 
     @Option(names = ["--http"], description = "Prints HTTP clone URL instead of repository name.")
     Boolean httpUrl = false
+
+    @Option(names = ["--print-update-script"], description = "Prints a bash script meant for updating HTTP clones created by app auth.")
+    Boolean printHttpUpdateScript = false
 
     Date beforeTimeframe
     @Option(names = ["--before"], description = "Find all repositories updated before the given timeframe. Must be a positive integer followed by one of: d, m, y.  For example, 1y will find all repositories updated before 1 year ago.  If d, m, or y is not provided then d will be assumed.")

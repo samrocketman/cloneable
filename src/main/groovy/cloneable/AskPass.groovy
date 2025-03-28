@@ -37,7 +37,12 @@ class AskPass {
         getScriptFromTemplate(script, binding)
     }
 
-    static printScript(App options) {
+    static printAskpassScript(App options) {
         println(getAskPassScript(options))
+    }
+
+    static String printHttpUpdateScript(App options) {
+        String script = new String(AskPass.getResourceAsStream('/cloneable/update-script.sh').getBytes()).trim()
+        println(script)
     }
 }
