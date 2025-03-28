@@ -17,6 +17,11 @@ New options to simplify documentation:
 - `--print-clone-script` enables easier cloning of orgs.
 - `--print-update-script` enables easier updating of already cloned backups.
 
+New feature:
+
+- HTTP cloning is now supported for basic `GITHUB_TOKEN` in addition to GitHub
+  app authentication.
+
 Bug fixes:
 
 - Added `GITHUB_API_URL` for GitHub Enterprise app authentication.

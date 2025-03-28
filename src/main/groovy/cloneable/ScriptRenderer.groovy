@@ -46,10 +46,12 @@ class ScriptRenderer {
 
     static printAskpassScript(App options) {
         Map vars = [
+            appId: options.ghAppId,
             jarPath: getJarPath(),
             keyPath: getCanonicalPath(options.ghAppKey),
-            appId: options.ghAppId,
-            owner: options.owner
+            owner: options.owner,
+            ownerIsUser: options.ownerIsUser,
+            usesGitHubAppAuth: options.usesGitHubAppAuth
         ]
         println(renderScript('/cloneable/askpass-tempate.jsp', vars))
     }

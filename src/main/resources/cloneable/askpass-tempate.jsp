@@ -15,14 +15,20 @@ JAR_PATH='${jarPath}'
 if [ -z "\$CLONEABLE_OWNER" ]; then
   CLONEABLE_OWNER='${owner}'
 fi
-if [ -z "\$CLONEABLE_GITHUB_APP_ID" ]; then
+export CLONEABLE_OWNER
+<%
+  if(usesGitHubAppAuth) {
+%>if [ -z "\$CLONEABLE_GITHUB_APP_ID" ]; then
   CLONEABLE_GITHUB_APP_ID='${appId}'
 fi
 if [ -z "\$CLONEABLE_GITHUB_APP_KEY" ]; then
   CLONEABLE_GITHUB_APP_KEY='${keyPath}'
 fi
-export CLONEABLE_OWNER CLONEABLE_GITHUB_APP_ID CLONEABLE_GITHUB_APP_KEY
-case "\$1" in
+if [ -z "\$CLONEABLE_USER_OWNER" ]; then
+  CLONEABLE_USER_OWNER=${ownerIsUser}
+fi
+export  CLONEABLE_USER_OWNER CLONEABLE_GITHUB_APP_ID CLONEABLE_GITHUB_APP_KEY
+<% } %>case "\$1" in
   Username*)
     echo x-access-token
     ;;

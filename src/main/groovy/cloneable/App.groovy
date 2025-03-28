@@ -355,11 +355,14 @@ class App implements Callable<Integer> {
         )
         this.usesGitHubAppAuth = (this.ghAppId && this.ghAppKey)
         // options which make owner not required
-        Boolean ownerIsRequired = !(shouldPrintScript ^ this.printCloneScript)
+        Boolean ownerIsRequired = !(
+            (shouldPrintScript ^ this.printCloneScript) ||
+            (!this.usesGitHubAppAuth && this.printGhToken)
+        )
         if(!this.owner && ownerIsRequired) {
             throw new ParameterException(spec.commandLine(), "Missing required option: '--owner=<owner>'")
         }
-        if(this.printGhToken && !this.usesGitHubAppAuth) {
+        if(this.printGhToken && !this.token && !this.usesGitHubAppAuth) {
             List requiredOptions = []
             if(!this.ghAppId) {
                 requiredOptions << "Missing required option: '--github-app-id=<ghAppId>'"
