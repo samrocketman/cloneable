@@ -56,11 +56,27 @@ java -jar cloneable.jar --owner samrocketman --match-topics jenkins
 
 # Environment Variables
 
+- `CLONEABLE_DEBUG` when non-zero provides more debug output.
 - `GITHUB_GRAPHQL_URL` if using self-hosted GitHub Enterprise, then set
   environment variable to `https://[hostname]/api/graphql`.
+
+Authentication options: Use either GitHub token or GitHub App auth.  If both are
+defined, then GitHub App auth will be prioritized.
+
 - `GITHUB_TOKEN` set your personal access token so that cloneable can
   authenticate with the GraphQL API.  See also [`Setup` section](#setup).
+- `CLONEABLE_GITHUB_APP_ID` set the GitHub App ID.
+- `CLONEABLE_GITHUB_APP_KEY` a path the RSA private key file used for GitHub App
+  authentication.
 
+If you're using GitHub app authentication with Git credential helper, then the
+following environment variables are available.
+
+- `CLONEABLE_DEBUG` set to non-zero will print a little more debug output about
+  askpass program calls.
+- `CLONEABLE_OWNER` set to override the `--owner` hardcoded in the askpass
+  program.  This enables switching GitHub organizations without needing to write
+  out the askpass script again.
 
 # Options
 

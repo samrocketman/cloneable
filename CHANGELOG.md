@@ -1,3 +1,7 @@
+# 0.10
+
+- Support for GitHub App Authentication.
+
 # 0.9
 
 - Bugfix: not listing repositories owned by another user or org in which the
