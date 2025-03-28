@@ -26,8 +26,67 @@ import picocli.CommandLine.Spec
 import groovy.time.TimeCategory
 import java.util.concurrent.Callable
 
-@Command(name = 'cloneable', mixinStandardHelpOptions = true, versionProvider = ManifestVersionProvider.class,
-         description = 'Gets a list of repositories if given a GitHub user or GitHub organization.\n\nhttps://github.com/samrocketman/cloneable\n\nOptions:')
+@Command(
+    name = 'cloneable',
+    mixinStandardHelpOptions = true,
+    versionProvider = ManifestVersionProvider.class,
+    description = '''\
+Gets a list of repositories if given a GitHub user or GitHub organization.
+The primary purpose of this program is to facilitate listing GitHub
+repositories and cloning them for an offline backup.
+
+https://github.com/samrocketman/cloneable
+
+Example Usage:
+  Set up authentication.
+    export CLONEABLE_GITHUB_APP_ID=1234
+    export CLONEABLE_GITHUB_APP_KEY=/path/to/private_key
+
+  Create bash completion.
+    function cloneable() { java -jar /path/to/cloneable.jar "@"; }
+    java -cp build/libs/cloneable.jar picocli.AutoComplete \\
+      -n cloneable cloneable.App
+    cp cloneable_completion /etc/bash_completion.d/
+
+  Install GIT_ASKPASS script when using GitHub App auth.
+    cloneable -o your-org --print-askpass-script | /bin/bash
+
+  HTTP mirror clones using GIT_ASKPASS.
+    export GIT_ASKPASS=/tmp/askpass
+    cloneable -o your-org --http --skip-local-bare-repos \\
+      | xargs -r -n1 -P16 -- git clone --mirror
+
+  Update HTTP mirrors.
+    find . -maxdepth 1 -name '*.git' -print0 \\
+      | xargs -0 -n1 -P16 -I'{}' -- /bin/bash -exc 'cd "{}"; git fetch'
+
+Environment Variables:
+
+  CLONEABLE_CACHE_KEY
+    RSA private key used to encrypt cache.  By default,
+    CLONEABLE_GITHUB_APP_KEY is used.
+
+  CLONEABLE_CACHE_PATH
+    Directory where persisted encrypted cache and lockfile get stored.
+
+  CLONEABLE_DEBUG
+    Same as --debug, enables debug mode showing more information.
+
+  CLONEABLE_GITHUB_APP_ID
+    GitHub App ID used in GitHub App authentication.
+
+  CLONEABLE_GITHUB_APP_KEY
+    GitHub App private key used in GitHub App authentication.
+
+  GITHUB_GRAPHQL_URL
+    GraphQL endpoint for GitHub.
+
+  GITHUB_TOKEN
+    GitHub personal token for API communication when GitHub App authentication
+    is not available.
+
+Options:
+''')
 class App implements Callable<Integer> {
 
     @Spec
