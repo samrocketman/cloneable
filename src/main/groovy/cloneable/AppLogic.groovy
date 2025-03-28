@@ -48,6 +48,7 @@ class AppLogic {
                 isFork
                 isPrivate
                 cloneUrl: sshUrl
+                httpUrl: url
                 repositoryTopics(first: 100) {
                   topics: nodes{
                     topic {
@@ -163,7 +164,9 @@ class AppLogic {
                 options.inverseSearch.xor(shouldPrint)
             }
         }.collect { Map repo ->
-            if(options.printUrl) {
+            if(options.httpUrl) {
+                repo.httpUrl + '.git'
+            } else if(options.printUrl) {
                 repo.cloneUrl
             } else {
                 repo.name
