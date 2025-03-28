@@ -51,7 +51,8 @@ Example Usage:
   Create CLI integration with bash completion.
     java -jar cloneable.jar --print-cli-script > /usr/local/bin/cloneable
     chmod 755 /usr/local/bin/cloneable
-    cloneable --print-bash-completion > /etc/bash_completion.d/cloneable_completion
+    cloneable --print-bash-completion \\
+      > /etc/bash_completion.d/cloneable_completion
 
   Install GIT_ASKPASS script when using GitHub App auth.
     cloneable -o your-org --print-askpass-script | /bin/bash
@@ -86,6 +87,16 @@ Environment Variables:
 
   CLONEABLE_GITHUB_APP_KEY
     GitHub App private key used in GitHub App authentication.
+
+  CLONEABLE_OWNER
+    Set the --owner=<owner> via environment variable instead of option.
+
+  CLONEABLE_USER_OWNER
+    If using GitHub App authentication and the --owner is a GitHub user rather
+    than an organization you should set this environment variable to be
+    anything (non-zero length).  GitHub apps get API tokens for users
+    differently than organizations.  As of this writing GitHub provides no easy
+    way to auto-detect this without an API token so this is a catch 22.
 
   GITHUB_GRAPHQL_URL
     GitHub API endpoint for GraphQL. Default: https://api.github.com/graphql
