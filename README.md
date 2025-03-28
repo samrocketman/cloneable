@@ -1,5 +1,13 @@
 # Cloneable
 
+- :white_check_mark: Supports GitHub App or personal access token (PAT) for
+  querying and cloning.
+- :white_check_mark: Clone over HTTP with app or PAT via [`GIT_ASKPASS`
+  backend][git-credentials].
+- :white_check_mark: Query projects over HTTP and clone using SSH private key.
+- :white_check_mark: Flexibly query projects based on age, contents, and other
+  factors.  See CLI Documentation below for a full list.
+
 A simple backup solution for offsite backups of GitHub repository source code.
 
 Cloneable is a Java-based CLI application which queries GitHub and reports
