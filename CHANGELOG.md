@@ -1,3 +1,28 @@
+# 0.11
+
+Code updates
+
+- Generated shell scripts have wider support by using `/bin/sh` instead of
+  `/bin/bash`.
+- All shell scripts pass shellcheck.
+- `CLONEABLE_OWNER` now used in both askpass and jar arguments.  It was only
+  available in askpass script.
+- `--owner` option is now optional with some arguments as opposed to always
+  being required.
+
+New options to simplify documentation:
+
+- `--print-bash-completion` creates a bash completion script.
+- `--print-cli-script` creates a wrapper shell script for cloneable.jar.
+- `--print-clone-script` enables easier cloning of orgs.
+- `--print-update-script` enables easier updating of already cloned backups.
+
+Bug fixes:
+
+- Added `GITHUB_API_URL` for GitHub Enterprise app authentication.
+- New option `--user` will request API tokens for app installed for users.
+
+
 # 0.10
 
 - Support for GitHub App Authentication.
