@@ -1,5 +1,7 @@
 # Cloneable
 
+- :arrow_forward: Download `cloneable.jar` from [GitHub releases
+  page][download].
 - :white_check_mark: Supports GitHub App or personal access token (PAT) for
   querying and cloning.
 - :white_check_mark: Clone over HTTP with app or PAT via [`GIT_ASKPASS`
@@ -7,6 +9,8 @@
 - :white_check_mark: Query projects over HTTP and clone using SSH private key.
 - :white_check_mark: Flexibly query projects based on age, contents, and other
   factors.  See CLI Documentation below for a full list.
+- :white_check_mark: Minimal dependencies: Java, `/bin/sh`, and standard
+  utilities; GNU or BSD coreutils, and busybox supported.
 
 A simple backup solution for offsite backups of GitHub repository source code.
 
@@ -319,8 +323,9 @@ Options:
   -V, --version              Print version information and exit.
 ```
 
+[download]: https://github.com/samrocketman/cloneable/releases
+[git-credentials]: https://git-scm.com/docs/gitcredentials
 [github-token]: https://help.github.com/en/github/authenticating-to-github/creating-a-personal-access-token-for-the-command-line
+[other-backup]: https://github.com/topics/github-backup
 [releases]: https://github.com/samrocketman/cloneable/releases
 [v4]: https://developer.github.com/v4/
-[other-backup]: https://github.com/topics/github-backup
-[git-credentials]: https://git-scm.com/docs/gitcredentials
