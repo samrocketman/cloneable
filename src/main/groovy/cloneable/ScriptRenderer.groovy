@@ -15,34 +15,69 @@
  */
 
 package cloneable
+
 import static net.gleske.jervis.tools.AutoRelease.getScriptFromTemplate
 
-class AskPass {
-    AskPass() {
+import picocli.AutoComplete
+
+class ScriptRenderer {
+    ScriptRenderer() {
         throw new IllegalStateException('ERROR: you\'ve encountered a bug.  Add --debug option and open an issue.')
     }
 
-    static String getJarPath() {
-        new File(AskPass.getProtectionDomain().getCodeSource().getLocation().file).canonicalFile
+    static String getCanonicalPath(String path) {
+        if(!path) {
+            return ''
+        }
+        new File(path).canonicalPath
     }
 
-    static String getAskPassScript(App options) {
-        String script = new String(AskPass.getResourceAsStream('/cloneable/clone.script.jsp').getBytes()).trim()
-        Map binding = [
-            jarPath: getJarPath(),
-            keyPath: new File(options.ghAppKey).canonicalPath,
-            appId: options.ghAppId,
-            owner: options.owner
-        ]
-        getScriptFromTemplate(script, binding)
+    static String getJarPath() {
+        getCanonicalPath(ScriptRenderer.getProtectionDomain().getCodeSource().getLocation().file)
+    }
+
+    static readFileFromJar(String path) {
+        new String(ScriptRenderer.getResourceAsStream(path).getBytes()).trim()
+    }
+
+    static String renderScript(String path, Map vars) {
+        getScriptFromTemplate(readFileFromJar(path), vars)
     }
 
     static printAskpassScript(App options) {
-        println(getAskPassScript(options))
+        Map vars = [
+            jarPath: getJarPath(),
+            keyPath: getCanonicalPath(options.ghAppKey),
+            appId: options.ghAppId,
+            owner: options.owner
+        ]
+        println(renderScript('/cloneable/askpass-tempate.jsp', vars))
     }
 
-    static String printHttpUpdateScript(App options) {
-        String script = new String(AskPass.getResourceAsStream('/cloneable/update-script.sh').getBytes()).trim()
-        println(script)
+    static void printUpdateScript(App options) {
+        Map vars = [
+            isHttpUpdate: options.httpUrl
+        ]
+        println(renderScript('/cloneable/update-template.jsp', vars))
+    }
+
+    static void printCliScript() {
+        Map vars = [
+            jarPath: getJarPath()
+        ]
+        println(renderScript('/cloneable/cli-template.jsp', vars))
+    }
+
+    static void printCloneScript(App options) {
+        List additional_args = options.optionsToArgList()
+        Map vars = [
+            jarPath: getJarPath(),
+            additional_args: additional_args.join(' \\\n  ')
+        ]
+        println(renderScript('/cloneable/clone-template.jsp', vars))
+    }
+
+    static void printBashCompletion(App options) {
+        println(AutoComplete.bash('cloneable', options.spec.commandLine()).trim())
     }
 }

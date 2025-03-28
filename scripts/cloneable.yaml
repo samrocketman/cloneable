@@ -1,0 +1,10 @@
+utility:
+  cloneable.jar:
+    download: ${GITHUB_MIRROR:-https://github.com}/samrocketman/cloneable/releases/download/${version}/cloneable.jar
+    perm: 0644
+    dest: "${CLONEABLE_JAR_PATH:-/usr/local/share}"
+    update: |
+      owner="$(awk -F/ '{print $4"/"$5}' <<< "${download}")"
+      export download=https://github.com/"${owner}"/releases/latest
+      eval "${default_download_head}" |
+      awk '$1 ~ /[Ll]ocation:/ { gsub(".*/[^0-9.]*", "", $0); print;exit}'

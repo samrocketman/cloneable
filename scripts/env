@@ -1,0 +1,3 @@
+export CLONEABLE_SCRIPT_PATH=./scratch
+export CLONEABLE_COMPLETION_PATH=./scratch
+export CLONEABLE_JAR_PATH=./scratch

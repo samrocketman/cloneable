@@ -17,9 +17,9 @@
 package cloneable
 
 import static net.gleske.jervis.tools.AutoRelease.getScriptFromTemplate
-import net.gleske.jervis.remotes.GitHubGraphQL
 
 import cloneable.errors.MissingCredentialException
+import net.gleske.jervis.remotes.GitHubGraphQL
 import net.gleske.jervis.remotes.GitHubGraphQL
 import net.gleske.jervis.remotes.creds.EphemeralTokenCache
 import net.gleske.jervis.remotes.creds.GitHubAppCredential
@@ -178,15 +178,16 @@ class AppLogic {
     }
 
     static ReadonlyTokenCredential getCredential(App options) {
-        if(options.ghAppId && options.ghAppKey) {
-            if(!options.owner) {
-                throw new Exception('Must provide --owner option when using GitHub app authentication.')
-            }
+        if(options.usesGitHubAppAuth) {
             File key = new File(options.ghAppKey)
             if(!key.exists()) {
                 throw new MissingCredentialException('GitHub App private key file does not exist.')
             }
-            GitHubAppRsaCredentialImpl rsaCred = new GitHubAppRsaCredentialImpl(options.ghAppId, key.text)
+            GitHubAppRsaCredentialImpl rsaCred = new GitHubAppRsaCredentialImpl(
+                options.ghAppId,
+                key.text,
+                System.getenv('GITHUB_API_URL') ?: GitHubAppCredential.DEFAULT_GITHUB_API
+            )
             rsaCred.owner = options.owner
             EphemeralTokenCache tokenCred = new EphemeralTokenCache(System.getenv('CLONEABLE_CACHE_KEY') ?: options.ghAppKey)
             if(System.getenv('CLONEABLE_CACHE_PATH')) {
@@ -197,30 +198,37 @@ class AppLogic {
                 tokenCred.cacheLockFile = '/tmp/jervis-token-cache.lock'
                 tokenCred.cacheFile = '/tmp/jervis-token-cache.yaml'
             }
-            return new GitHubAppCredential(rsaCred, tokenCred)
+            GitHubAppCredential github_app = new GitHubAppCredential(rsaCred, tokenCred)
+            github_app.github_api_url = System.getenv('GITHUB_API_URL') ?: GitHubAppCredential.DEFAULT_GITHUB_API
+            return github_app
         } else {
             return new Credential(options.token)
         }
     }
 
     static void main(App options) {
+        if(options.shouldPrintScript) {
+            if (options.printAskpassScript) {
+                ScriptRenderer.printAskpassScript(options)
+            } else if(options.printUpdateScript) {
+                ScriptRenderer.printUpdateScript(options)
+            } else if(options.printCliScript) {
+                ScriptRenderer.printCliScript()
+            } else if(options.printCloneScript) {
+                ScriptRenderer.printCloneScript(options)
+            } else {
+                // options.printBashCompletion enters here
+                ScriptRenderer.printBashCompletion(options)
+            }
+            return
+        }
         GitHubGraphQL github = new GitHubGraphQL()
         if(System.getenv('GITHUB_GRAPHQL_URL')) {
             github.gh_api = System.getenv('GITHUB_GRAPHQL_URL')
         }
         github.credential = getCredential(options)
-        if(options.printAskpassScript || options.printGhToken || options.printHttpUpdateScript) {
-            if(!(options.ghAppId && options.ghAppKey)) {
-                throw new Exception('Cannot print token without using GitHub App authentication.')
-            }
-            if(options.printGhToken) {
-                println(github.credential.token)
-            } else if (options.printAskpassScript) {
-                AskPass.printAskpassScript(options)
-            } else {
-                // options.printHttpUpdateScript enters here
-                AskPass.printHttpUpdateScript(options)
-            }
+        if(options.printGhToken) {
+            println(github.credential.token)
             return
         }
         if((options.excludeAllFiles || options.matchAnyFiles) && !options.branch) {
