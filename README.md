@@ -16,10 +16,15 @@ Binary download is available in [GitHub releases][releases].
 
 # Setup
 
-In order to call cloneable, it is recommended to set a small shell function with
-the full path to the downloaded Jar.
+In order to call cloneable, it is recommended install the wrapper shell script
+along with the bash competion for it.
 
-    function cloneable() { java -jar /path/to/cloneable.jar "@"; }
+    java -jar cloneable.jar --print-cli-script > /usr/local/bin/cloneable
+    chmod 755 /usr/local/bin/cloneable
+
+Install bash completion script for interactive auto-complete of options.
+
+    cloneable --print-bash-completion > /etc/bash_completion.d/cloneable_completion
 
 You need to also set up one of two methods for authentication to query GraphQL
 APIs.
@@ -35,31 +40,6 @@ Set environment variables with GitHub App authentication.
     export CLONEABLE_GITHUB_APP_ID=1234
     export CLONEABLE_GITHUB_APP_KEY=/path/to/private_key
 
-Install a `GIT_ASKPASS` script set up for cloning.
-
-    cloneable -o your-org --print-askpass-script | /bin/bash
-
-The `GIT_ASKPASS` script will default to always auth against `your-org`.  If you
-want to clone from another associated org for the GitHub App, you can set
-environment variable `CLONEABLE_OWNER`.
-
-Cloning over HTTP.
-
-    export GIT_ASKPASS=/tmp/askpass
-    cloneable -o your-org --http --skip-local-bare-repos \
-      | xargs -r -n1 -P16 -- git clone --mirror
-    export CLONEABLE_OWNER=another-org
-    cloneable -o another-org --http --skip-local-bare-repos \
-      | xargs -r -n1 -P16 -- git clone --mirror
-
-Update clones using HTTP.
-
-```
-find . -maxdepth 1 -name '*.git' -print0 \
-  | xargs -0 -n1 -P16 -I'{}' -- /bin/bash -exc \
-  'cd "{}"; export CLONEABLE_OWNER="$(git config remote.origin.url | cut -d/ -f4)"; git fetch'
-```
-
 ### GitHub Personal Access Tokens
 
 Requires a [GitHub personal access token][github-token] with scopes:
@@ -68,7 +48,57 @@ Requires a [GitHub personal access token][github-token] with scopes:
 - `repo` for a user with private repositories.
 - No scopes required for a user or organization with public repositories only.
 
+Setup authentication.
+
+    export GITHUB_TOKEN=<gh pat>
+
 # Example Usage
+
+Example usage covers HTTP and SSH cloning.  The following methods work with both
+App and personal access token auth.
+
+### Backup over HTTP
+
+Cloning over HTTP requires backend authentication via `GIT_ASKPASS`.  See
+[git-credentials][git-credentials] for details.
+
+Install a `GIT_ASKPASS` script set up for cloning.
+
+    cloneable -o your-org --print-askpass-script | /bin/sh
+
+    # Or alternalte location instead of /tmp/askpass
+    cloneable -o integralads --print-askpass-script | \
+        CLONEABLE_ASKPASS_LOCATION=/alternate/askpass /bin/sh
+
+The `GIT_ASKPASS` script will default to always auth against `your-org`.  If you
+want to clone from another associated org for the GitHub App, you can set
+environment variable `CLONEABLE_OWNER`.
+
+Clone all repositories.  You can pass any cloneable arguments.
+
+    export GIT_ASKPASS=/tmp/askpass
+    cloneable -o your-org --http --skip-local-bare-repos \
+      --print-clone-script | /bin/sh
+
+    export CLONEABLE_OWNER=another-org
+    cloneable --http --skip-local-bare-repos \
+      --print-clone-script | /bin/sh -x
+
+Update clones using HTTP.
+
+    cloneable --http --print-update-script | /bin/sh -x
+
+### Backup over SSH
+
+Assuming your already have an SSH clone key loaded within ssh-agent.  You can
+clone and update repositories using SSH.
+
+    cloneable --url --skip-local-bare-repos \
+      --print-clone-script | /bin/sh -x
+
+Update clones using SSH.
+
+    cloneable --url --print-update-script | /bin/sh -x
 
 List repository names under a user or organization.
 
@@ -98,30 +128,6 @@ Show samrocketman repositories which have a `jenkins` topic.
 cloneable --owner samrocketman --match-topics jenkins
 ```
 
-# Environment Variables
-
-- `CLONEABLE_DEBUG` when non-zero provides more debug output.
-- `GITHUB_GRAPHQL_URL` if using self-hosted GitHub Enterprise, then set
-  environment variable to `https://[hostname]/api/graphql`.
-
-Authentication options: Use either GitHub token or GitHub App auth.  If both are
-defined, then GitHub App auth will be prioritized.
-
-- `GITHUB_TOKEN` set your personal access token so that cloneable can
-  authenticate with the GraphQL API.  See also [`Setup` section](#setup).
-- `CLONEABLE_GITHUB_APP_ID` set the GitHub App ID.
-- `CLONEABLE_GITHUB_APP_KEY` a path the RSA private key file used for GitHub App
-  authentication.
-
-If you're using GitHub app authentication with Git credential helper, then the
-following environment variables are available.
-
-- `CLONEABLE_DEBUG` set to non-zero will print a little more debug output about
-  askpass program calls.
-- `CLONEABLE_OWNER` set to override the `--owner` hardcoded in the askpass
-  program.  This enables switching GitHub organizations without needing to write
-  out the askpass script again.
-
 # Build Jar
 
     ./gradlew clean jar
@@ -130,55 +136,15 @@ Run tests
 
     ./gradlew clean check
 
-# Bash completion
-
-Cloneable is an uber Jar which contains all of its dependencies necessary to run
-it.  Bash completion is available for this app which increases the convenience
-of its use.
-
-Create a local directory for cloneable config.
-
-```bash
-mkdir ~/.local/share/cloneable
-```
-
-Generate bash completion file.
-
-```bash
-java -cp build/libs/cloneable.jar picocli.AutoComplete -n cloneable cloneable.App
-mv cloneable_completion ~/.local/share/cloneable/
-cp build/libs/cloneable.jar ~/.local/share/cloneable/
-```
-
-Set up a `cloneable` command alias.
-
-```bash
-# install in bashrc
-echo 'source ~/.local/share/cloneable/cloneable_completion' >> ~/.bashrc
-echo "alias cloneable='java -jar ~/.local/share/cloneable/cloneable.jar'" >> ~/.bashrc
-
-# install in bash_profile
-echo 'source ~/.local/share/cloneable/cloneable_completion' >> ~/.bash_profile
-echo "alias cloneable='java -jar ~/.local/share/cloneable/cloneable.jar'" >> ~/.bash_profile
-```
-
-Use in your current shell without requiring restarting the shell.
-
-```bash
-source ~/.local/share/cloneable/cloneable_completion
-alias cloneable='java -jar ~/.local/share/cloneable/cloneable.jar'
-```
-
-Now all `cloneable` options will be able to TAB complete.
-
 # CLI Documentation
 
 The following options are available from `java -jar cloneable.jar --help`.
 
 ```
-Usage: cloneable [-abdefhipPsuV] [--http] [--print-askpass-script]
-                 [--print-auth-token] [--print-bash-completion]
-                 [--print-cli-script] [--print-update-script]
+Usage: cloneable [-abdefhipPsuV] [--http] [--owner-is-user]
+                 [--print-askpass-script] [--print-auth-token]
+                 [--print-bash-completion] [--print-cli-script]
+                 [--print-clone-script] [--print-update-script]
                  [--after=<afterTimeframe>] [-B=<branch>]
                  [--before=<beforeTimeframe>] [-g=<ghAppId>] [-k=<ghAppKey>]
                  [-o=<owner>] [-t=<token>] [-E=<excludeAllFiles>]...
@@ -193,29 +159,34 @@ Description:
 
 Example Usage:
 
-  Set up authentication.
+  Set up GitHub App authentication.
     export CLONEABLE_GITHUB_APP_ID=1234
     export CLONEABLE_GITHUB_APP_KEY=/path/to/private_key
 
-  Create bash completion.
-    function cloneable() { java -jar /path/to/cloneable.jar "@"; }
-    java -cp build/libs/cloneable.jar picocli.AutoComplete \
-      -n cloneable cloneable.App
-    cp cloneable_completion /etc/bash_completion.d/
+  Or you can use a GitHub personal access token.
+    export GITHUB_TOKEN=<github_pat_...>
+
+  Create CLI integration with bash completion.
+    java -jar cloneable.jar --print-cli-script > /usr/local/bin/cloneable
+    chmod 755 /usr/local/bin/cloneable
+    cloneable --print-bash-completion > /etc/bash_completion.
+d/cloneable_completion
 
   Install GIT_ASKPASS script when using GitHub App auth.
     cloneable -o your-org --print-askpass-script | /bin/bash
 
   HTTP mirror clones using GIT_ASKPASS.
     export GIT_ASKPASS=/tmp/askpass
-    cloneable -o your-org --http --skip-local-bare-repos \
-      | xargs -r -n1 -P16 -- git clone --mirror
+    cloneable -o your-org --http \
+      --skip-local-bare-repos --print-clone-script \
+      | /bin/sh
+
     export CLONEABLE_OWNER=another-org
-    cloneable -o another-org --http --skip-local-bare-repos \
-      | xargs -r -n1 -P16 -- git clone --mirror
+    cloneable --http --skip-local-bare-repos --print-clone-script \
+      | /bin/sh
 
   Update HTTP mirrors.
-    cloneable -o none --print-update-script | /bin/bash -x
+    cloneable --print-update-script | /bin/sh -x
 
 Environment Variables:
 
@@ -309,6 +280,9 @@ Options:
                                topics.  -m can be specified multiple times.
   -o, --owner=<owner>        GitHub account or organization for querying a list
                                of projects.
+      --owner-is-user        If using GitHub App auth this flag indicates app
+                               installation is for a user instead of
+                               organization.
   -p, --skip-private-repos   If a repository is private, then it will be
                                skipped.
   -P, --skip-public-repos    If a repository is public, then it will be skipped.
@@ -323,6 +297,8 @@ Options:
                                redirect stdout to '/etc/bash_completion.d'.
       --print-cli-script     Prints 'cloneable' CLI wrapper script.  e.g.
                                redirect stdout to '/usr/local/bin/cloneable'.
+      --print-clone-script   Prints a bash script meant for updating HTTP
+                               clones created by app auth.  Pipe into /bin/sh
       --print-update-script  Prints a bash script meant for updating HTTP
                                clones created by app auth.  Pipe into /bin/sh
   -s, --skip-source-repos    If a repository is **not** a fork from another
@@ -339,3 +315,4 @@ Options:
 [releases]: https://github.com/samrocketman/cloneable/releases
 [v4]: https://developer.github.com/v4/
 [other-backup]: https://github.com/topics/github-backup
+[git-credentials]: https://git-scm.com/docs/gitcredentials

@@ -41,9 +41,12 @@ Description:
 
 Example Usage:
 
-  Set up authentication.
+  Set up GitHub App authentication.
     export CLONEABLE_GITHUB_APP_ID=1234
     export CLONEABLE_GITHUB_APP_KEY=/path/to/private_key
+
+  Or you can use a GitHub personal access token.
+    export GITHUB_TOKEN=<github_pat_...>
 
   Create CLI integration with bash completion.
     java -jar cloneable.jar --print-cli-script > /usr/local/bin/cloneable
