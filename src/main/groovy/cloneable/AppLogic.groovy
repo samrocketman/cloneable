@@ -199,6 +199,7 @@ class AppLogic {
                 tokenCred.cacheFile = '/tmp/jervis-token-cache.yaml'
             }
             GitHubAppCredential github_app = new GitHubAppCredential(rsaCred, tokenCred)
+            github_app.ownerIsUser = options.ownerIsUser
             github_app.github_api_url = System.getenv('GITHUB_API_URL') ?: GitHubAppCredential.DEFAULT_GITHUB_API
             return github_app
         } else {

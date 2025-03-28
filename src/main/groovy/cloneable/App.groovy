@@ -190,6 +190,9 @@ class App implements Callable<Integer> {
     @Option(names = ["--http"], description = "Prints HTTP clone URL instead of repository name.  Also dictates output of --print-update-script and --print-clone-script")
     Boolean httpUrl = false
 
+    @Option(names = ["--owner-is-user"], description = "If using GitHub App auth this flag indicates app installation is for a user instead of organization.")
+    Boolean ownerIsUser = false
+
     Date beforeTimeframe
     @Option(names = ["--before"], description = "Find all repositories updated before the given timeframe. Must be a positive integer followed by one of: d, m, y.  For example, 1y will find all repositories updated before 1 year ago.  If d, m, or y is not provided then d will be assumed.")
     void setBeforeTimeframe(String userInput) {
@@ -334,6 +337,9 @@ class App implements Callable<Integer> {
         }
         if(!this.owner && System.getenv('CLONEABLE_OWNER')) {
             this.owner = System.getenv('CLONEABLE_OWNER')
+        }
+        if(!this.ownerIsUser && System.getenv('CLONEABLE_USER_OWNER')) {
+            this.ownerIsUser = true
         }
     }
 

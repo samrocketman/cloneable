@@ -20,7 +20,8 @@ New options to simplify documentation:
 Bug fixes:
 
 - Added `GITHUB_API_URL` for GitHub Enterprise app authentication.
-- New option `--user` will request API tokens for app installed for users.
+- New option `--owner-is-user` will request API tokens for app installed for
+  users rather than GitHub organization.
 
 
 # 0.10
