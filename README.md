@@ -136,6 +136,22 @@ Run tests
 
     ./gradlew clean check
 
+Recent development done in the following environment.
+
+    Pop!_OS 22.04 LTS
+    Linux 6.9.3-76060903-generic x86_64
+    GNU bash, version 5.1.16(1)-release (x86_64-pc-linux-gnu)
+    Gradle 8.13
+    Build time: 2025-02-25 09:22:14 UTC
+    Revision: 073314332697ba45c16c0a0ce1891fa6794179ff
+    Kotlin: 2.0.21
+    Groovy: 3.0.22
+    Ant: Apache Ant(TM) version 1.10.15 compiled on August 25 2024
+    Launcher JVM: 17.0.12 (Ubuntu 17.0.12+7-Ubuntu-1ubuntu222.04)
+    Daemon JVM: /usr/lib/jvm/java-17-openjdk-amd64 (no JDK specified, using current Java home)
+    OS: Linux 6.9.3-76060903-generic amd64
+    openjdk 17.0.12 2024-07-16
+
 # CLI Documentation
 
 The following options are available from `java -jar cloneable.jar --help`.
