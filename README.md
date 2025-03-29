@@ -24,7 +24,7 @@ Cloneable utilizes [GitHub API v4 GraphQL][v4].  If you need a more thorough
 backup solution, check out [other solutions on GitHub][other-backup].
 # Download
 
-Binary download is available in [GitHub releases][releases].
+Binary download is available in [GitHub releases][download].
 
 # Setup
 
@@ -327,5 +327,4 @@ Options:
 [git-credentials]: https://git-scm.com/docs/gitcredentials
 [github-token]: https://help.github.com/en/github/authenticating-to-github/creating-a-personal-access-token-for-the-command-line
 [other-backup]: https://github.com/topics/github-backup
-[releases]: https://github.com/samrocketman/cloneable/releases
 [v4]: https://developer.github.com/v4/
