@@ -10,7 +10,6 @@ utility:
     post_command: |
       export CLONEABLE_SCRIPT_PATH="${CLONEABLE_SCRIPT_PATH:-/usr/local/bin}"
       export CLONEABLE_COMPLETION_PATH="${CLONEABLE_COMPLETION_PATH:-/etc/bash_completion.d}"
-      export CLONEABLE_JAR_PATH=./scratch
       java -jar "${dest}/${utility}" --print-bash-completion > "${CLONEABLE_COMPLETION_PATH}"/cloneable_completion
       java -jar "${dest}/${utility}" --print-cli-script > "${CLONEABLE_SCRIPT_PATH}"/cloneable
       chmod 755 "${CLONEABLE_SCRIPT_PATH}"/cloneable
