@@ -1,8 +1,19 @@
+versions:
+  cloneable.jar: "0.11"
+checksums:
+  cloneable.jar: 07d9786522552e41bb114212024f4f87b904abf0981339810dd4b9d19189ffdc
 utility:
   cloneable.jar:
     download: ${GITHUB_MIRROR:-https://github.com}/samrocketman/cloneable/releases/download/${version}/cloneable.jar
     perm: 0644
     dest: "${CLONEABLE_JAR_PATH:-/usr/local/share}"
+    post_command: |
+      export CLONEABLE_SCRIPT_PATH="${CLONEABLE_SCRIPT_PATH:-/usr/local/bin}"
+      export CLONEABLE_COMPLETION_PATH="${CLONEABLE_COMPLETION_PATH:-/etc/bash_completion.d}"
+      export CLONEABLE_JAR_PATH=./scratch
+      java -jar "${dest}/${utility}" --print-bash-completion > "${CLONEABLE_COMPLETION_PATH}"/cloneable_completion
+      java -jar "${dest}/${utility}" --print-cli-script > "${CLONEABLE_SCRIPT_PATH}"/cloneable
+      chmod 755 "${CLONEABLE_SCRIPT_PATH}"/cloneable
     update: |
       owner="$(awk -F/ '{print $4"/"$5}' <<< "${download}")"
       export download=https://github.com/"${owner}"/releases/latest
