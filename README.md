@@ -78,7 +78,7 @@ Install a `GIT_ASKPASS` script set up for cloning.
 
     cloneable -o your-org --print-askpass-script | /bin/sh
 
-    # Or alternalte location instead of /tmp/askpass
+    # Or alternate location instead of /tmp/askpass
     cloneable -o integralads --print-askpass-script | \
         CLONEABLE_ASKPASS_LOCATION=/alternate/askpass /bin/sh
 
@@ -90,7 +90,7 @@ Clone all repositories.  You can pass any cloneable arguments.
 
     export GIT_ASKPASS=/tmp/askpass
     cloneable -o your-org --http --skip-local-bare-repos \
-      --print-clone-script | /bin/sh
+      --print-clone-script | /bin/sh -x
 
     export CLONEABLE_OWNER=another-org
     cloneable --http --skip-local-bare-repos \
@@ -112,26 +112,14 @@ Update clones using SSH.
 
     cloneable --url --print-update-script | /bin/sh -x
 
+### Other usage
+
 List repository names under a user or organization.
 
 ```
 export GITHUB_TOKEN
 read -ersp token: GITHUB_TOKEN
 cloneable --owner samrocketman
-```
-
-Clone all repositories.
-
-```bash
-cloneable --owner samrocketman --url --skip-local-bare-repos \
-  | xargs -r -n1 -P16 -- git clone --mirror
-```
-
-Synchronize all repository mirrors.
-
-```bash
-find . -maxdepth 1 -name '*.git' -print0 \
-  | xargs -0 -n1 -P16 -I'{}' -- /bin/bash -exc 'cd "{}"; git fetch'
 ```
 
 Show samrocketman repositories which have a `jenkins` topic.
