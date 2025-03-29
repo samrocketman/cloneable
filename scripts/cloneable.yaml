@@ -10,9 +10,17 @@ utility:
     post_command: |
       export CLONEABLE_SCRIPT_PATH="${CLONEABLE_SCRIPT_PATH:-/usr/local/bin}"
       export CLONEABLE_COMPLETION_PATH="${CLONEABLE_COMPLETION_PATH:-/etc/bash_completion.d}"
-      java -jar "${dest}/${utility}" --print-bash-completion > "${CLONEABLE_COMPLETION_PATH}"/cloneable_completion
-      java -jar "${dest}/${utility}" --print-cli-script > "${CLONEABLE_SCRIPT_PATH}"/cloneable
-      chmod 755 "${CLONEABLE_SCRIPT_PATH}"/cloneable
+      shasum -a 256 -c - \
+        <<< "4a07930b23bfae4809ec16883395a2b228181c48a5fbae33e562e168cbba7657  ${CLONEABLE_SCRIPT_PATH}/cloneable" \
+        || (
+        java -jar "${dest}/${utility}" --print-cli-script > "${CLONEABLE_SCRIPT_PATH}"/cloneable
+        chmod 755 "${CLONEABLE_SCRIPT_PATH}"/cloneable
+        )
+      shasum -a 256 -c - \
+        <<< "90a00e412ea42fc5631b230da873a699df13f469813c696a884f59f6e15cfec6  ${CLONEABLE_COMPLETION_PATH}/cloneable_completion" \
+        || (
+        java -jar "${dest}/${utility}" --print-bash-completion > "${CLONEABLE_COMPLETION_PATH}"/cloneable_completion
+        )
     update: |
       owner="$(awk -F/ '{print $4"/"$5}' <<< "${download}")"
       export download=https://github.com/"${owner}"/releases/latest
